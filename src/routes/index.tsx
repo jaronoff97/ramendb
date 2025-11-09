@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getSignInUrl, signOut } from '@/lib/workos/server-functions'
+import { getSignInUrl } from '@/lib/workos/server-functions'
 import SignInButton from '@/components/workos/signinbutton';
 
 export const Route = createFileRoute('/')({
