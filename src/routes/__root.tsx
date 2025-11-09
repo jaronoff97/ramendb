@@ -5,24 +5,26 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-
 import Header from '../components/Header'
-
 import WorkOSProvider from '../integrations/workos/provider'
-
 import StoreDevtools from '../lib/demo-store-devtools'
-
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-
 import appCss from '../styles.css?url'
-
 import type { QueryClient } from '@tanstack/react-query'
+import type { User } from '@workos-inc/node';
+import { getAuth, getSignInUrl } from '@/lib/workos/server-functions'
 
-interface MyRouterContext {
+interface RamenDBRouterContext {
   queryClient: QueryClient
+  user?: User
 }
 
-export const Route = createRootRouteWithContext<MyRouterContext>()({
+export const Route = createRootRouteWithContext<RamenDBRouterContext>()({
+  beforeLoad: async () => {
+    const { user } = await getAuth();
+
+    return { user };
+  },
   head: () => ({
     meta: [
       {
@@ -43,8 +45,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
   }),
-
   shellComponent: RootDocument,
+  loader: async ({ context }) => {
+    const { user } = context;
+    const url = await getSignInUrl();
+    return {
+      user,
+      url,
+    };
+  },
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {

@@ -1,54 +1,81 @@
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  Zap,
-  Server,
-  Route as RouteIcon,
-  Shield,
-  Waves,
-  Sparkles,
-} from 'lucide-react'
+import { getSignInUrl, signOut } from '@/lib/workos/server-functions'
+import SignInButton from '@/components/workos/signinbutton';
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute('/')({
+  component: App,
+  loader: async ({ context }) => {
+    const { user } = context;
+    const signInUrl = await getSignInUrl();
+    return { user, signInUrl };
+  },
+})
 
 function App() {
-  const features = [
-    {
-      icon: <Zap className="w-12 h-12 text-cyan-400" />,
-      title: 'Powerful Server Functions',
-      description:
-        'Write server-side code that seamlessly integrates with your client components. Type-safe, secure, and simple.',
-    },
-    {
-      icon: <Server className="w-12 h-12 text-cyan-400" />,
-      title: 'Flexible Server Side Rendering',
-      description:
-        'Full-document SSR, streaming, and progressive enhancement out of the box. Control exactly what renders where.',
-    },
-    {
-      icon: <RouteIcon className="w-12 h-12 text-cyan-400" />,
-      title: 'API Routes',
-      description:
-        'Build type-safe API endpoints alongside your application. No separate backend needed.',
-    },
-    {
-      icon: <Shield className="w-12 h-12 text-cyan-400" />,
-      title: 'Strongly Typed Everything',
-      description:
-        'End-to-end type safety from server to client. Catch errors before they reach production.',
-    },
-    {
-      icon: <Waves className="w-12 h-12 text-cyan-400" />,
-      title: 'Full Streaming Support',
-      description:
-        'Stream data from server to client progressively. Perfect for AI applications and real-time updates.',
-    },
-    {
-      icon: <Sparkles className="w-12 h-12 text-cyan-400" />,
-      title: 'Next Generation Ready',
-      description:
-        'Built from the ground up for modern web applications. Deploy anywhere JavaScript runs.',
-    },
-  ]
+  const { user, signInUrl } = Route.useLoaderData();
+
+  if (user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl p-8 w-full max-w-md border border-gray-700/50">
+          <h1 className="text-2xl font-bold text-white mb-6 text-center">
+            User Profile
+          </h1>
+
+          <div className="space-y-6">
+            {/* Profile Picture */}
+            {user.profilePictureUrl && (
+              <div className="flex justify-center">
+                <img
+                  src={user.profilePictureUrl}
+                  alt={`Avatar of ${user.firstName} ${user.lastName}`}
+                  className="w-24 h-24 rounded-full border-4 border-gray-700 shadow-lg"
+                />
+              </div>
+            )}
+
+            {/* User Information */}
+            <div className="space-y-4">
+              <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30">
+                <label className="text-gray-400 text-sm font-medium block mb-1">
+                  First Name
+                </label>
+                <p className="text-white text-lg">{user.firstName || 'N/A'}</p>
+              </div>
+
+              <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30">
+                <label className="text-gray-400 text-sm font-medium block mb-1">
+                  Last Name
+                </label>
+                <p className="text-white text-lg">{user.lastName || 'N/A'}</p>
+              </div>
+
+              <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30">
+                <label className="text-gray-400 text-sm font-medium block mb-1">
+                  Email
+                </label>
+                <p className="text-white text-lg break-all">
+                  {user.email || 'N/A'}
+                </p>
+              </div>
+
+              <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30">
+                <label className="text-gray-400 text-sm font-medium block mb-1">
+                  User ID
+                </label>
+                <p className="text-gray-300 text-sm font-mono break-all">
+                  {user.id || 'N/A'}
+                </p>
+              </div>
+            </div>
+
+            {/* Sign Out Button */}
+            <SignInButton user={user} url={signInUrl} large />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
@@ -68,49 +95,10 @@ function App() {
               </span>
             </h1>
           </div>
-          <p className="text-2xl md:text-3xl text-gray-300 mb-4 font-light">
-            The framework for next generation AI applications
+          <p className="text-gray-400 text-center mb-6">
+            Sign in to view your profile information
           </p>
-          <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-8">
-            Full-stack framework powered by TanStack Router for React and Solid.
-            Build modern applications with server functions, streaming, and type
-            safety.
-          </p>
-          <div className="flex flex-col items-center gap-4">
-            <a
-              href="https://tanstack.com/start"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors shadow-lg shadow-cyan-500/50"
-            >
-              Documentation
-            </a>
-            <p className="text-gray-400 text-sm mt-2">
-              Begin your TanStack Start journey by editing{' '}
-              <code className="px-2 py-1 bg-slate-700 rounded text-cyan-400">
-                /src/routes/index.tsx
-              </code>
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
-            >
-              <div className="mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                {feature.description}
-              </p>
-            </div>
-          ))}
+          <SignInButton user={user} url={signInUrl} large />
         </div>
       </section>
     </div>

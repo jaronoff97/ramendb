@@ -11,6 +11,11 @@ if (!VITE_WORKOS_API_HOSTNAME) {
   throw new Error('Add your WorkOS API Hostname to the .env.local file')
 }
 
+const VITE_WORKOS_REDIRECT_URI = import.meta.env.VITE_WORKOS_REDIRECT_URI
+if (!VITE_WORKOS_REDIRECT_URI) {
+  throw new Error('Add your WorkOS Redirect URI to the .env.local file')
+}
+
 export default function AppWorkOSProvider({
   children,
 }: {
@@ -22,6 +27,7 @@ export default function AppWorkOSProvider({
     <AuthKitProvider
       clientId={VITE_WORKOS_CLIENT_ID}
       apiHostname={VITE_WORKOS_API_HOSTNAME}
+      redirectUri={VITE_WORKOS_REDIRECT_URI}
       onRedirectCallback={({ state }) => {
         if (state?.returnTo) {
           navigate(state.returnTo)
