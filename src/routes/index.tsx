@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import type { LatLngTuple } from 'leaflet';
 import { getSignInUrl } from '@/lib/workos/server-functions'
+import LeafletMap from '@/components/leaflet/map';
 
 export const Route = createFileRoute('/')({
   ssr: false,
@@ -14,16 +15,10 @@ export const Route = createFileRoute('/')({
 })
 
 function App() {
+  const center: LatLngTuple = [40.71817164135247, -73.99294107683443];
   return (
-    <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false} style={{ height: "400px", width: "600px" }}>
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <Marker position={[51.505, -0.09]}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
-    </MapContainer>
+    <LeafletMap center={center} zoom={13}>
+      <></>
+    </LeafletMap>
   )
 }

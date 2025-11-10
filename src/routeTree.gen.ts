@@ -16,7 +16,6 @@ import { Route as DemoWorkosRouteImport } from './routes/demo/workos'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoStoreRouteImport } from './routes/demo/store'
-import { Route as AuthenticatedPostsRouteImport } from './routes/_authenticated/posts'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as ApiTagsIndexRouteImport } from './routes/api/tags/index'
 import { Route as ApiReviewsIndexRouteImport } from './routes/api/reviews/index'
@@ -25,6 +24,7 @@ import { Route as ApiRatingsIndexRouteImport } from './routes/api/ratings/index'
 import { Route as ApiLocationsIndexRouteImport } from './routes/api/locations/index'
 import { Route as ApiLocationPicturesIndexRouteImport } from './routes/api/location-pictures/index'
 import { Route as ApiDishesIndexRouteImport } from './routes/api/dishes/index'
+import { Route as AuthenticatedReviewsIndexRouteImport } from './routes/_authenticated/reviews/index'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
 import { Route as DemoFormSimpleRouteImport } from './routes/demo/form.simple'
@@ -39,6 +39,8 @@ import { Route as ApiLocationsIdRouteImport } from './routes/api/locations/$id'
 import { Route as ApiLocationPicturesIdRouteImport } from './routes/api/location-pictures/$id'
 import { Route as ApiDishesIdRouteImport } from './routes/api/dishes/$id'
 import { Route as ApiAuthCallbackRouteImport } from './routes/api/auth/callback'
+import { Route as AuthenticatedReviewsNewRouteImport } from './routes/_authenticated/reviews/new'
+import { Route as AuthenticatedReviewsIdRouteImport } from './routes/_authenticated/reviews/$id'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
 import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr.spa-mode'
 import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
@@ -77,11 +79,6 @@ const DemoStoreRoute = DemoStoreRouteImport.update({
   id: '/demo/store',
   path: '/demo/store',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedPostsRoute = AuthenticatedPostsRouteImport.update({
-  id: '/posts',
-  path: '/posts',
-  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
@@ -124,6 +121,12 @@ const ApiDishesIndexRoute = ApiDishesIndexRouteImport.update({
   path: '/api/dishes/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedReviewsIndexRoute =
+  AuthenticatedReviewsIndexRouteImport.update({
+    id: '/reviews/',
+    path: '/reviews/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const DemoStartServerFuncsRoute = DemoStartServerFuncsRouteImport.update({
   id: '/demo/start/server-funcs',
   path: '/demo/start/server-funcs',
@@ -194,6 +197,16 @@ const ApiAuthCallbackRoute = ApiAuthCallbackRouteImport.update({
   path: '/api/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedReviewsNewRoute = AuthenticatedReviewsNewRouteImport.update({
+  id: '/reviews/new',
+  path: '/reviews/new',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedReviewsIdRoute = AuthenticatedReviewsIdRouteImport.update({
+  id: '/reviews/$id',
+  path: '/reviews/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const DemoStartSsrIndexRoute = DemoStartSsrIndexRouteImport.update({
   id: '/demo/start/ssr/',
   path: '/demo/start/ssr/',
@@ -219,11 +232,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/logout': typeof LogoutRoute
   '/account': typeof AuthenticatedAccountRoute
-  '/posts': typeof AuthenticatedPostsRoute
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/workos': typeof DemoWorkosRoute
+  '/reviews/$id': typeof AuthenticatedReviewsIdRoute
+  '/reviews/new': typeof AuthenticatedReviewsNewRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/dishes/$id': typeof ApiDishesIdRoute
   '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
@@ -238,6 +252,7 @@ export interface FileRoutesByFullPath {
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/reviews': typeof AuthenticatedReviewsIndexRoute
   '/api/dishes': typeof ApiDishesIndexRoute
   '/api/location-pictures': typeof ApiLocationPicturesIndexRoute
   '/api/locations': typeof ApiLocationsIndexRoute
@@ -254,11 +269,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/logout': typeof LogoutRoute
   '/account': typeof AuthenticatedAccountRoute
-  '/posts': typeof AuthenticatedPostsRoute
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/workos': typeof DemoWorkosRoute
+  '/reviews/$id': typeof AuthenticatedReviewsIdRoute
+  '/reviews/new': typeof AuthenticatedReviewsNewRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/dishes/$id': typeof ApiDishesIdRoute
   '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
@@ -273,6 +289,7 @@ export interface FileRoutesByTo {
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/reviews': typeof AuthenticatedReviewsIndexRoute
   '/api/dishes': typeof ApiDishesIndexRoute
   '/api/location-pictures': typeof ApiLocationPicturesIndexRoute
   '/api/locations': typeof ApiLocationsIndexRoute
@@ -291,11 +308,12 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/logout': typeof LogoutRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
-  '/_authenticated/posts': typeof AuthenticatedPostsRoute
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/workos': typeof DemoWorkosRoute
+  '/_authenticated/reviews/$id': typeof AuthenticatedReviewsIdRoute
+  '/_authenticated/reviews/new': typeof AuthenticatedReviewsNewRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/dishes/$id': typeof ApiDishesIdRoute
   '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
@@ -310,6 +328,7 @@ export interface FileRoutesById {
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/_authenticated/reviews/': typeof AuthenticatedReviewsIndexRoute
   '/api/dishes/': typeof ApiDishesIndexRoute
   '/api/location-pictures/': typeof ApiLocationPicturesIndexRoute
   '/api/locations/': typeof ApiLocationsIndexRoute
@@ -328,11 +347,12 @@ export interface FileRouteTypes {
     | '/'
     | '/logout'
     | '/account'
-    | '/posts'
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/workos'
+    | '/reviews/$id'
+    | '/reviews/new'
     | '/api/auth/callback'
     | '/api/dishes/$id'
     | '/api/location-pictures/$id'
@@ -347,6 +367,7 @@ export interface FileRouteTypes {
     | '/demo/form/simple'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/reviews'
     | '/api/dishes'
     | '/api/location-pictures'
     | '/api/locations'
@@ -363,11 +384,12 @@ export interface FileRouteTypes {
     | '/'
     | '/logout'
     | '/account'
-    | '/posts'
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/workos'
+    | '/reviews/$id'
+    | '/reviews/new'
     | '/api/auth/callback'
     | '/api/dishes/$id'
     | '/api/location-pictures/$id'
@@ -382,6 +404,7 @@ export interface FileRouteTypes {
     | '/demo/form/simple'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/reviews'
     | '/api/dishes'
     | '/api/location-pictures'
     | '/api/locations'
@@ -399,11 +422,12 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/logout'
     | '/_authenticated/account'
-    | '/_authenticated/posts'
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/workos'
+    | '/_authenticated/reviews/$id'
+    | '/_authenticated/reviews/new'
     | '/api/auth/callback'
     | '/api/dishes/$id'
     | '/api/location-pictures/$id'
@@ -418,6 +442,7 @@ export interface FileRouteTypes {
     | '/demo/form/simple'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/_authenticated/reviews/'
     | '/api/dishes/'
     | '/api/location-pictures/'
     | '/api/locations/'
@@ -517,13 +542,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoStoreRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/posts': {
-      id: '/_authenticated/posts'
-      path: '/posts'
-      fullPath: '/posts'
-      preLoaderRoute: typeof AuthenticatedPostsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/account': {
       id: '/_authenticated/account'
       path: '/account'
@@ -579,6 +597,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/dishes'
       preLoaderRoute: typeof ApiDishesIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/reviews/': {
+      id: '/_authenticated/reviews/'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof AuthenticatedReviewsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/demo/start/server-funcs': {
       id: '/demo/start/server-funcs'
@@ -678,6 +703,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/reviews/new': {
+      id: '/_authenticated/reviews/new'
+      path: '/reviews/new'
+      fullPath: '/reviews/new'
+      preLoaderRoute: typeof AuthenticatedReviewsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/reviews/$id': {
+      id: '/_authenticated/reviews/$id'
+      path: '/reviews/$id'
+      fullPath: '/reviews/$id'
+      preLoaderRoute: typeof AuthenticatedReviewsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/demo/start/ssr/': {
       id: '/demo/start/ssr/'
       path: '/demo/start/ssr'
@@ -711,12 +750,16 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
-  AuthenticatedPostsRoute: typeof AuthenticatedPostsRoute
+  AuthenticatedReviewsIdRoute: typeof AuthenticatedReviewsIdRoute
+  AuthenticatedReviewsNewRoute: typeof AuthenticatedReviewsNewRoute
+  AuthenticatedReviewsIndexRoute: typeof AuthenticatedReviewsIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
-  AuthenticatedPostsRoute: AuthenticatedPostsRoute,
+  AuthenticatedReviewsIdRoute: AuthenticatedReviewsIdRoute,
+  AuthenticatedReviewsNewRoute: AuthenticatedReviewsNewRoute,
+  AuthenticatedReviewsIndexRoute: AuthenticatedReviewsIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

@@ -35,7 +35,7 @@ export const Route = createRootRouteWithContext<RamenDBRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'RamenDB',
       },
     ],
     links: [
