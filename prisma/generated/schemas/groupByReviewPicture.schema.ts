@@ -1,0 +1,13 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { ReviewPictureWhereInputObjectSchema as ReviewPictureWhereInputObjectSchema } from './objects/ReviewPictureWhereInput.schema';
+import { ReviewPictureOrderByWithAggregationInputObjectSchema as ReviewPictureOrderByWithAggregationInputObjectSchema } from './objects/ReviewPictureOrderByWithAggregationInput.schema';
+import { ReviewPictureScalarWhereWithAggregatesInputObjectSchema as ReviewPictureScalarWhereWithAggregatesInputObjectSchema } from './objects/ReviewPictureScalarWhereWithAggregatesInput.schema';
+import { ReviewPictureScalarFieldEnumSchema } from './enums/ReviewPictureScalarFieldEnum.schema';
+import { ReviewPictureCountAggregateInputObjectSchema as ReviewPictureCountAggregateInputObjectSchema } from './objects/ReviewPictureCountAggregateInput.schema';
+import { ReviewPictureMinAggregateInputObjectSchema as ReviewPictureMinAggregateInputObjectSchema } from './objects/ReviewPictureMinAggregateInput.schema';
+import { ReviewPictureMaxAggregateInputObjectSchema as ReviewPictureMaxAggregateInputObjectSchema } from './objects/ReviewPictureMaxAggregateInput.schema';
+
+export const ReviewPictureGroupBySchema: z.ZodType<Prisma.ReviewPictureGroupByArgs> = z.object({ where: ReviewPictureWhereInputObjectSchema.optional(), orderBy: z.union([ReviewPictureOrderByWithAggregationInputObjectSchema, ReviewPictureOrderByWithAggregationInputObjectSchema.array()]).optional(), having: ReviewPictureScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(ReviewPictureScalarFieldEnumSchema), _count: z.union([ z.literal(true), ReviewPictureCountAggregateInputObjectSchema ]).optional(), _min: ReviewPictureMinAggregateInputObjectSchema.optional(), _max: ReviewPictureMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.ReviewPictureGroupByArgs>;
+
+export const ReviewPictureGroupByZodSchema = z.object({ where: ReviewPictureWhereInputObjectSchema.optional(), orderBy: z.union([ReviewPictureOrderByWithAggregationInputObjectSchema, ReviewPictureOrderByWithAggregationInputObjectSchema.array()]).optional(), having: ReviewPictureScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(ReviewPictureScalarFieldEnumSchema), _count: z.union([ z.literal(true), ReviewPictureCountAggregateInputObjectSchema ]).optional(), _min: ReviewPictureMinAggregateInputObjectSchema.optional(), _max: ReviewPictureMaxAggregateInputObjectSchema.optional() }).strict();

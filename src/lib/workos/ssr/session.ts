@@ -101,8 +101,9 @@ export async function saveSession(sessionOrResponse: Session | AuthenticationRes
 // the JWK set is only created when it's needed, and not before.
 const JWKS = lazy(() => createRemoteJWKSet(new URL(getWorkOS().userManagement.getJwksUrl(getConfig('clientId')))));
 
-async function verifyAccessToken(accessToken: string): Promise<boolean> {
+export async function verifyAccessToken(accessToken: string): Promise<boolean> {
   try {
+    console.log({ jwks: getWorkOS().userManagement.getJwksUrl(getConfig('clientId')) })
     await jwtVerify(accessToken, JWKS());
     return true;
   } catch {

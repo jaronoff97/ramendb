@@ -135,3 +135,13 @@ export interface AuthKitConfig {
    */
   cookieDomain?: string;
 }
+
+export interface AccessTokenInfo {
+  sub: string,
+  sessionId: string,
+  organizationId: string,
+  role: string,
+  permissions: Array<string>,
+  entitlements: Array<string>,
+  rawSession: any
+}

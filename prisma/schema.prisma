@@ -1,0 +1,181 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider                         = "prisma-zod-generator"
+  createOptionalDefaultValuesTypes = true
+  createRelationValuesTypes        = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  workosId   String   @unique
+  email      String   @unique
+  name       String?
+  pictureUrl String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  ratings Rating[]
+  reviews Review[]
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  type      String // e.g. "restaurant", "cocktail_bar"
+  address   String?
+  city      String?
+  state     String?
+  country   String?
+  latitude  Float?
+  longitude Float?
+  website   String?
+  hours     Json? // Structured opening hours
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dishes   Dish[] /// @zod .optional()
+  ratings  Rating[] /// @zod .optional()
+  reviews  Review[] /// @zod .optional()
+  tags     LocationTag[] /// @zod .optional()
+  pictures LocationPicture[] /// @zod .optional()
+}
+
+model Dish {
+  id          String   @id @default(cuid())
+  locationId  String
+  name        String
+  description String?
+  price       Decimal? @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  location Location  @relation(fields: [locationId], references: [id])
+  tags     DishTag[]
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  category  String? // e.g. "bowl_type", "ambience", "flavor_profile"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  locations LocationTag[]
+  dishes    DishTag[]
+  ratings   RatingTag[]
+  reviews   ReviewTag[]
+}
+
+model Rating {
+  // Numeric rating entries (used to compute aggregates)
+  id         String   @id @default(cuid())
+  locationId String
+  userId     String
+  value      Int      @default(0) // 0..5
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  location Location @relation(fields: [locationId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+
+  // optional: reviews that reference this numeric rating
+  reviews        Review[]        @relation("RatingToReviews")
+  tags           RatingTag[]
+  ratingPictures RatingPicture[]
+}
+
+model Review {
+  // Textual review content, photos, and optional linkage to a numeric Rating
+  id         String   @id @default(cuid())
+  locationId String
+  userId     String
+  ratingId   String? // optional: if this review was submitted together with a numeric rating
+  title      String?
+  text       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  location Location @relation(fields: [locationId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  rating   Rating?  @relation("RatingToReviews", fields: [ratingId], references: [id])
+
+  pictures ReviewPicture[]
+  tags     ReviewTag[]
+}
+
+model LocationTag {
+  locationId String
+  tagId      String
+  location   Location @relation(fields: [locationId], references: [id])
+  tag        Tag      @relation(fields: [tagId], references: [id])
+
+  @@id([locationId, tagId])
+}
+
+model DishTag {
+  dishId String
+  tagId  String
+  dish   Dish   @relation(fields: [dishId], references: [id])
+  tag    Tag    @relation(fields: [tagId], references: [id])
+
+  @@id([dishId, tagId])
+}
+
+model RatingTag {
+  ratingId String
+  tagId    String
+  rating   Rating @relation(fields: [ratingId], references: [id])
+  tag      Tag    @relation(fields: [tagId], references: [id])
+
+  @@id([ratingId, tagId])
+}
+
+model ReviewTag {
+  reviewId String
+  tagId    String
+  review   Review @relation(fields: [reviewId], references: [id])
+  tag      Tag    @relation(fields: [tagId], references: [id])
+
+  @@id([reviewId, tagId])
+}
+
+model LocationPicture {
+  id         String   @id @default(cuid())
+  locationId String
+  url        String
+  caption    String?
+  createdAt  DateTime @default(now())
+
+  location Location @relation(fields: [locationId], references: [id])
+}
+
+model RatingPicture {
+  // If you want to allow pictures attached directly to a rating
+  id        String   @id @default(cuid())
+  ratingId  String
+  url       String
+  caption   String?
+  createdAt DateTime @default(now())
+
+  rating Rating @relation(fields: [ratingId], references: [id])
+}
+
+model ReviewPicture {
+  id        String   @id @default(cuid())
+  reviewId  String
+  url       String
+  caption   String?
+  createdAt DateTime @default(now())
+
+  review Review @relation(fields: [reviewId], references: [id])
+}

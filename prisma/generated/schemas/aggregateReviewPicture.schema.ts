@@ -1,0 +1,12 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { ReviewPictureOrderByWithRelationInputObjectSchema as ReviewPictureOrderByWithRelationInputObjectSchema } from './objects/ReviewPictureOrderByWithRelationInput.schema';
+import { ReviewPictureWhereInputObjectSchema as ReviewPictureWhereInputObjectSchema } from './objects/ReviewPictureWhereInput.schema';
+import { ReviewPictureWhereUniqueInputObjectSchema as ReviewPictureWhereUniqueInputObjectSchema } from './objects/ReviewPictureWhereUniqueInput.schema';
+import { ReviewPictureCountAggregateInputObjectSchema as ReviewPictureCountAggregateInputObjectSchema } from './objects/ReviewPictureCountAggregateInput.schema';
+import { ReviewPictureMinAggregateInputObjectSchema as ReviewPictureMinAggregateInputObjectSchema } from './objects/ReviewPictureMinAggregateInput.schema';
+import { ReviewPictureMaxAggregateInputObjectSchema as ReviewPictureMaxAggregateInputObjectSchema } from './objects/ReviewPictureMaxAggregateInput.schema';
+
+export const ReviewPictureAggregateSchema: z.ZodType<Prisma.ReviewPictureAggregateArgs> = z.object({ orderBy: z.union([ReviewPictureOrderByWithRelationInputObjectSchema, ReviewPictureOrderByWithRelationInputObjectSchema.array()]).optional(), where: ReviewPictureWhereInputObjectSchema.optional(), cursor: ReviewPictureWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), ReviewPictureCountAggregateInputObjectSchema ]).optional(), _min: ReviewPictureMinAggregateInputObjectSchema.optional(), _max: ReviewPictureMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.ReviewPictureAggregateArgs>;
+
+export const ReviewPictureAggregateZodSchema = z.object({ orderBy: z.union([ReviewPictureOrderByWithRelationInputObjectSchema, ReviewPictureOrderByWithRelationInputObjectSchema.array()]).optional(), where: ReviewPictureWhereInputObjectSchema.optional(), cursor: ReviewPictureWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), ReviewPictureCountAggregateInputObjectSchema ]).optional(), _min: ReviewPictureMinAggregateInputObjectSchema.optional(), _max: ReviewPictureMaxAggregateInputObjectSchema.optional() }).strict();

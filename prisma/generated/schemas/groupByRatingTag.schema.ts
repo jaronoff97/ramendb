@@ -1,0 +1,13 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { RatingTagWhereInputObjectSchema as RatingTagWhereInputObjectSchema } from './objects/RatingTagWhereInput.schema';
+import { RatingTagOrderByWithAggregationInputObjectSchema as RatingTagOrderByWithAggregationInputObjectSchema } from './objects/RatingTagOrderByWithAggregationInput.schema';
+import { RatingTagScalarWhereWithAggregatesInputObjectSchema as RatingTagScalarWhereWithAggregatesInputObjectSchema } from './objects/RatingTagScalarWhereWithAggregatesInput.schema';
+import { RatingTagScalarFieldEnumSchema } from './enums/RatingTagScalarFieldEnum.schema';
+import { RatingTagCountAggregateInputObjectSchema as RatingTagCountAggregateInputObjectSchema } from './objects/RatingTagCountAggregateInput.schema';
+import { RatingTagMinAggregateInputObjectSchema as RatingTagMinAggregateInputObjectSchema } from './objects/RatingTagMinAggregateInput.schema';
+import { RatingTagMaxAggregateInputObjectSchema as RatingTagMaxAggregateInputObjectSchema } from './objects/RatingTagMaxAggregateInput.schema';
+
+export const RatingTagGroupBySchema: z.ZodType<Prisma.RatingTagGroupByArgs> = z.object({ where: RatingTagWhereInputObjectSchema.optional(), orderBy: z.union([RatingTagOrderByWithAggregationInputObjectSchema, RatingTagOrderByWithAggregationInputObjectSchema.array()]).optional(), having: RatingTagScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(RatingTagScalarFieldEnumSchema), _count: z.union([ z.literal(true), RatingTagCountAggregateInputObjectSchema ]).optional(), _min: RatingTagMinAggregateInputObjectSchema.optional(), _max: RatingTagMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.RatingTagGroupByArgs>;
+
+export const RatingTagGroupByZodSchema = z.object({ where: RatingTagWhereInputObjectSchema.optional(), orderBy: z.union([RatingTagOrderByWithAggregationInputObjectSchema, RatingTagOrderByWithAggregationInputObjectSchema.array()]).optional(), having: RatingTagScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(RatingTagScalarFieldEnumSchema), _count: z.union([ z.literal(true), RatingTagCountAggregateInputObjectSchema ]).optional(), _min: RatingTagMinAggregateInputObjectSchema.optional(), _max: RatingTagMaxAggregateInputObjectSchema.optional() }).strict();

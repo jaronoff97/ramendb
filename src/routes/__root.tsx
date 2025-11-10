@@ -17,13 +17,13 @@ import { getAuth, getSignInUrl } from '@/lib/workos/server-functions'
 interface RamenDBRouterContext {
   queryClient: QueryClient
   user?: User
+  accessToken?: string
 }
 
 export const Route = createRootRouteWithContext<RamenDBRouterContext>()({
   beforeLoad: async () => {
-    const { user } = await getAuth();
-
-    return { user };
+    const { user, accessToken } = await getAuth();
+    return { user, accessToken };
   },
   head: () => ({
     meta: [

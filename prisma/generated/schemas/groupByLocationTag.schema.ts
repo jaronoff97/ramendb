@@ -1,0 +1,13 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { LocationTagWhereInputObjectSchema as LocationTagWhereInputObjectSchema } from './objects/LocationTagWhereInput.schema';
+import { LocationTagOrderByWithAggregationInputObjectSchema as LocationTagOrderByWithAggregationInputObjectSchema } from './objects/LocationTagOrderByWithAggregationInput.schema';
+import { LocationTagScalarWhereWithAggregatesInputObjectSchema as LocationTagScalarWhereWithAggregatesInputObjectSchema } from './objects/LocationTagScalarWhereWithAggregatesInput.schema';
+import { LocationTagScalarFieldEnumSchema } from './enums/LocationTagScalarFieldEnum.schema';
+import { LocationTagCountAggregateInputObjectSchema as LocationTagCountAggregateInputObjectSchema } from './objects/LocationTagCountAggregateInput.schema';
+import { LocationTagMinAggregateInputObjectSchema as LocationTagMinAggregateInputObjectSchema } from './objects/LocationTagMinAggregateInput.schema';
+import { LocationTagMaxAggregateInputObjectSchema as LocationTagMaxAggregateInputObjectSchema } from './objects/LocationTagMaxAggregateInput.schema';
+
+export const LocationTagGroupBySchema: z.ZodType<Prisma.LocationTagGroupByArgs> = z.object({ where: LocationTagWhereInputObjectSchema.optional(), orderBy: z.union([LocationTagOrderByWithAggregationInputObjectSchema, LocationTagOrderByWithAggregationInputObjectSchema.array()]).optional(), having: LocationTagScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(LocationTagScalarFieldEnumSchema), _count: z.union([ z.literal(true), LocationTagCountAggregateInputObjectSchema ]).optional(), _min: LocationTagMinAggregateInputObjectSchema.optional(), _max: LocationTagMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.LocationTagGroupByArgs>;
+
+export const LocationTagGroupByZodSchema = z.object({ where: LocationTagWhereInputObjectSchema.optional(), orderBy: z.union([LocationTagOrderByWithAggregationInputObjectSchema, LocationTagOrderByWithAggregationInputObjectSchema.array()]).optional(), having: LocationTagScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(LocationTagScalarFieldEnumSchema), _count: z.union([ z.literal(true), LocationTagCountAggregateInputObjectSchema ]).optional(), _min: LocationTagMinAggregateInputObjectSchema.optional(), _max: LocationTagMaxAggregateInputObjectSchema.optional() }).strict();

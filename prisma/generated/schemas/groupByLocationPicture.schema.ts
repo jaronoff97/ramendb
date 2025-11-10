@@ -1,0 +1,13 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { LocationPictureWhereInputObjectSchema as LocationPictureWhereInputObjectSchema } from './objects/LocationPictureWhereInput.schema';
+import { LocationPictureOrderByWithAggregationInputObjectSchema as LocationPictureOrderByWithAggregationInputObjectSchema } from './objects/LocationPictureOrderByWithAggregationInput.schema';
+import { LocationPictureScalarWhereWithAggregatesInputObjectSchema as LocationPictureScalarWhereWithAggregatesInputObjectSchema } from './objects/LocationPictureScalarWhereWithAggregatesInput.schema';
+import { LocationPictureScalarFieldEnumSchema } from './enums/LocationPictureScalarFieldEnum.schema';
+import { LocationPictureCountAggregateInputObjectSchema as LocationPictureCountAggregateInputObjectSchema } from './objects/LocationPictureCountAggregateInput.schema';
+import { LocationPictureMinAggregateInputObjectSchema as LocationPictureMinAggregateInputObjectSchema } from './objects/LocationPictureMinAggregateInput.schema';
+import { LocationPictureMaxAggregateInputObjectSchema as LocationPictureMaxAggregateInputObjectSchema } from './objects/LocationPictureMaxAggregateInput.schema';
+
+export const LocationPictureGroupBySchema: z.ZodType<Prisma.LocationPictureGroupByArgs> = z.object({ where: LocationPictureWhereInputObjectSchema.optional(), orderBy: z.union([LocationPictureOrderByWithAggregationInputObjectSchema, LocationPictureOrderByWithAggregationInputObjectSchema.array()]).optional(), having: LocationPictureScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(LocationPictureScalarFieldEnumSchema), _count: z.union([ z.literal(true), LocationPictureCountAggregateInputObjectSchema ]).optional(), _min: LocationPictureMinAggregateInputObjectSchema.optional(), _max: LocationPictureMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.LocationPictureGroupByArgs>;
+
+export const LocationPictureGroupByZodSchema = z.object({ where: LocationPictureWhereInputObjectSchema.optional(), orderBy: z.union([LocationPictureOrderByWithAggregationInputObjectSchema, LocationPictureOrderByWithAggregationInputObjectSchema.array()]).optional(), having: LocationPictureScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(LocationPictureScalarFieldEnumSchema), _count: z.union([ z.literal(true), LocationPictureCountAggregateInputObjectSchema ]).optional(), _min: LocationPictureMinAggregateInputObjectSchema.optional(), _max: LocationPictureMaxAggregateInputObjectSchema.optional() }).strict();

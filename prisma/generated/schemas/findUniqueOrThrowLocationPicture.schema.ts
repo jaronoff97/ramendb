@@ -1,0 +1,9 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { LocationPictureSelectObjectSchema as LocationPictureSelectObjectSchema } from './objects/LocationPictureSelect.schema';
+import { LocationPictureIncludeObjectSchema as LocationPictureIncludeObjectSchema } from './objects/LocationPictureInclude.schema';
+import { LocationPictureWhereUniqueInputObjectSchema as LocationPictureWhereUniqueInputObjectSchema } from './objects/LocationPictureWhereUniqueInput.schema';
+
+export const LocationPictureFindUniqueOrThrowSchema: z.ZodType<Prisma.LocationPictureFindUniqueOrThrowArgs> = z.object({ select: LocationPictureSelectObjectSchema.optional(), include: LocationPictureIncludeObjectSchema.optional(), where: LocationPictureWhereUniqueInputObjectSchema }).strict() as unknown as z.ZodType<Prisma.LocationPictureFindUniqueOrThrowArgs>;
+
+export const LocationPictureFindUniqueOrThrowZodSchema = z.object({ select: LocationPictureSelectObjectSchema.optional(), include: LocationPictureIncludeObjectSchema.optional(), where: LocationPictureWhereUniqueInputObjectSchema }).strict();

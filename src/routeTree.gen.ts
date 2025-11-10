@@ -18,12 +18,26 @@ import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoStoreRouteImport } from './routes/demo/store'
 import { Route as AuthenticatedPostsRouteImport } from './routes/_authenticated/posts'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as ApiTagsIndexRouteImport } from './routes/api/tags/index'
+import { Route as ApiReviewsIndexRouteImport } from './routes/api/reviews/index'
+import { Route as ApiReviewPicturesIndexRouteImport } from './routes/api/review-pictures/index'
+import { Route as ApiRatingsIndexRouteImport } from './routes/api/ratings/index'
+import { Route as ApiLocationsIndexRouteImport } from './routes/api/locations/index'
+import { Route as ApiLocationPicturesIndexRouteImport } from './routes/api/location-pictures/index'
+import { Route as ApiDishesIndexRouteImport } from './routes/api/dishes/index'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
 import { Route as DemoFormSimpleRouteImport } from './routes/demo/form.simple'
 import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
 import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
 import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
+import { Route as ApiTagsIdRouteImport } from './routes/api/tags/$id'
+import { Route as ApiReviewsIdRouteImport } from './routes/api/reviews/$id'
+import { Route as ApiReviewPicturesIdRouteImport } from './routes/api/review-pictures/$id'
+import { Route as ApiRatingsIdRouteImport } from './routes/api/ratings/$id'
+import { Route as ApiLocationsIdRouteImport } from './routes/api/locations/$id'
+import { Route as ApiLocationPicturesIdRouteImport } from './routes/api/location-pictures/$id'
+import { Route as ApiDishesIdRouteImport } from './routes/api/dishes/$id'
 import { Route as ApiAuthCallbackRouteImport } from './routes/api/auth/callback'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
 import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr.spa-mode'
@@ -74,6 +88,42 @@ const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const ApiTagsIndexRoute = ApiTagsIndexRouteImport.update({
+  id: '/api/tags/',
+  path: '/api/tags/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReviewsIndexRoute = ApiReviewsIndexRouteImport.update({
+  id: '/api/reviews/',
+  path: '/api/reviews/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReviewPicturesIndexRoute = ApiReviewPicturesIndexRouteImport.update({
+  id: '/api/review-pictures/',
+  path: '/api/review-pictures/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRatingsIndexRoute = ApiRatingsIndexRouteImport.update({
+  id: '/api/ratings/',
+  path: '/api/ratings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLocationsIndexRoute = ApiLocationsIndexRouteImport.update({
+  id: '/api/locations/',
+  path: '/api/locations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLocationPicturesIndexRoute =
+  ApiLocationPicturesIndexRouteImport.update({
+    id: '/api/location-pictures/',
+    path: '/api/location-pictures/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiDishesIndexRoute = ApiDishesIndexRouteImport.update({
+  id: '/api/dishes/',
+  path: '/api/dishes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DemoStartServerFuncsRoute = DemoStartServerFuncsRouteImport.update({
   id: '/demo/start/server-funcs',
   path: '/demo/start/server-funcs',
@@ -102,6 +152,41 @@ const DemoApiTqTodosRoute = DemoApiTqTodosRouteImport.update({
 const DemoApiNamesRoute = DemoApiNamesRouteImport.update({
   id: '/demo/api/names',
   path: '/demo/api/names',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTagsIdRoute = ApiTagsIdRouteImport.update({
+  id: '/api/tags/$id',
+  path: '/api/tags/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReviewsIdRoute = ApiReviewsIdRouteImport.update({
+  id: '/api/reviews/$id',
+  path: '/api/reviews/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReviewPicturesIdRoute = ApiReviewPicturesIdRouteImport.update({
+  id: '/api/review-pictures/$id',
+  path: '/api/review-pictures/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRatingsIdRoute = ApiRatingsIdRouteImport.update({
+  id: '/api/ratings/$id',
+  path: '/api/ratings/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLocationsIdRoute = ApiLocationsIdRouteImport.update({
+  id: '/api/locations/$id',
+  path: '/api/locations/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLocationPicturesIdRoute = ApiLocationPicturesIdRouteImport.update({
+  id: '/api/location-pictures/$id',
+  path: '/api/location-pictures/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDishesIdRoute = ApiDishesIdRouteImport.update({
+  id: '/api/dishes/$id',
+  path: '/api/dishes/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthCallbackRoute = ApiAuthCallbackRouteImport.update({
@@ -140,12 +225,26 @@ export interface FileRoutesByFullPath {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/workos': typeof DemoWorkosRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
+  '/api/dishes/$id': typeof ApiDishesIdRoute
+  '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
+  '/api/locations/$id': typeof ApiLocationsIdRoute
+  '/api/ratings/$id': typeof ApiRatingsIdRoute
+  '/api/review-pictures/$id': typeof ApiReviewPicturesIdRoute
+  '/api/reviews/$id': typeof ApiReviewsIdRoute
+  '/api/tags/$id': typeof ApiTagsIdRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/api/dishes': typeof ApiDishesIndexRoute
+  '/api/location-pictures': typeof ApiLocationPicturesIndexRoute
+  '/api/locations': typeof ApiLocationsIndexRoute
+  '/api/ratings': typeof ApiRatingsIndexRoute
+  '/api/review-pictures': typeof ApiReviewPicturesIndexRoute
+  '/api/reviews': typeof ApiReviewsIndexRoute
+  '/api/tags': typeof ApiTagsIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -161,12 +260,26 @@ export interface FileRoutesByTo {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/workos': typeof DemoWorkosRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
+  '/api/dishes/$id': typeof ApiDishesIdRoute
+  '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
+  '/api/locations/$id': typeof ApiLocationsIdRoute
+  '/api/ratings/$id': typeof ApiRatingsIdRoute
+  '/api/review-pictures/$id': typeof ApiReviewPicturesIdRoute
+  '/api/reviews/$id': typeof ApiReviewsIdRoute
+  '/api/tags/$id': typeof ApiTagsIdRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/api/dishes': typeof ApiDishesIndexRoute
+  '/api/location-pictures': typeof ApiLocationPicturesIndexRoute
+  '/api/locations': typeof ApiLocationsIndexRoute
+  '/api/ratings': typeof ApiRatingsIndexRoute
+  '/api/review-pictures': typeof ApiReviewPicturesIndexRoute
+  '/api/reviews': typeof ApiReviewsIndexRoute
+  '/api/tags': typeof ApiTagsIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -184,12 +297,26 @@ export interface FileRoutesById {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/workos': typeof DemoWorkosRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
+  '/api/dishes/$id': typeof ApiDishesIdRoute
+  '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
+  '/api/locations/$id': typeof ApiLocationsIdRoute
+  '/api/ratings/$id': typeof ApiRatingsIdRoute
+  '/api/review-pictures/$id': typeof ApiReviewPicturesIdRoute
+  '/api/reviews/$id': typeof ApiReviewsIdRoute
+  '/api/tags/$id': typeof ApiTagsIdRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/api/dishes/': typeof ApiDishesIndexRoute
+  '/api/location-pictures/': typeof ApiLocationPicturesIndexRoute
+  '/api/locations/': typeof ApiLocationsIndexRoute
+  '/api/ratings/': typeof ApiRatingsIndexRoute
+  '/api/review-pictures/': typeof ApiReviewPicturesIndexRoute
+  '/api/reviews/': typeof ApiReviewsIndexRoute
+  '/api/tags/': typeof ApiTagsIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -207,12 +334,26 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/demo/workos'
     | '/api/auth/callback'
+    | '/api/dishes/$id'
+    | '/api/location-pictures/$id'
+    | '/api/locations/$id'
+    | '/api/ratings/$id'
+    | '/api/review-pictures/$id'
+    | '/api/reviews/$id'
+    | '/api/tags/$id'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/api/dishes'
+    | '/api/location-pictures'
+    | '/api/locations'
+    | '/api/ratings'
+    | '/api/review-pictures'
+    | '/api/reviews'
+    | '/api/tags'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -228,12 +369,26 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/demo/workos'
     | '/api/auth/callback'
+    | '/api/dishes/$id'
+    | '/api/location-pictures/$id'
+    | '/api/locations/$id'
+    | '/api/ratings/$id'
+    | '/api/review-pictures/$id'
+    | '/api/reviews/$id'
+    | '/api/tags/$id'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/api/dishes'
+    | '/api/location-pictures'
+    | '/api/locations'
+    | '/api/ratings'
+    | '/api/review-pictures'
+    | '/api/reviews'
+    | '/api/tags'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -250,12 +405,26 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/demo/workos'
     | '/api/auth/callback'
+    | '/api/dishes/$id'
+    | '/api/location-pictures/$id'
+    | '/api/locations/$id'
+    | '/api/ratings/$id'
+    | '/api/review-pictures/$id'
+    | '/api/reviews/$id'
+    | '/api/tags/$id'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/api/dishes/'
+    | '/api/location-pictures/'
+    | '/api/locations/'
+    | '/api/ratings/'
+    | '/api/review-pictures/'
+    | '/api/reviews/'
+    | '/api/tags/'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -271,12 +440,26 @@ export interface RootRouteChildren {
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   DemoWorkosRoute: typeof DemoWorkosRoute
   ApiAuthCallbackRoute: typeof ApiAuthCallbackRoute
+  ApiDishesIdRoute: typeof ApiDishesIdRoute
+  ApiLocationPicturesIdRoute: typeof ApiLocationPicturesIdRoute
+  ApiLocationsIdRoute: typeof ApiLocationsIdRoute
+  ApiRatingsIdRoute: typeof ApiRatingsIdRoute
+  ApiReviewPicturesIdRoute: typeof ApiReviewPicturesIdRoute
+  ApiReviewsIdRoute: typeof ApiReviewsIdRoute
+  ApiTagsIdRoute: typeof ApiTagsIdRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
   DemoFormSimpleRoute: typeof DemoFormSimpleRoute
   DemoStartApiRequestRoute: typeof DemoStartApiRequestRoute
   DemoStartServerFuncsRoute: typeof DemoStartServerFuncsRoute
+  ApiDishesIndexRoute: typeof ApiDishesIndexRoute
+  ApiLocationPicturesIndexRoute: typeof ApiLocationPicturesIndexRoute
+  ApiLocationsIndexRoute: typeof ApiLocationsIndexRoute
+  ApiRatingsIndexRoute: typeof ApiRatingsIndexRoute
+  ApiReviewPicturesIndexRoute: typeof ApiReviewPicturesIndexRoute
+  ApiReviewsIndexRoute: typeof ApiReviewsIndexRoute
+  ApiTagsIndexRoute: typeof ApiTagsIndexRoute
   DemoStartSsrDataOnlyRoute: typeof DemoStartSsrDataOnlyRoute
   DemoStartSsrFullSsrRoute: typeof DemoStartSsrFullSsrRoute
   DemoStartSsrSpaModeRoute: typeof DemoStartSsrSpaModeRoute
@@ -348,6 +531,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/tags/': {
+      id: '/api/tags/'
+      path: '/api/tags'
+      fullPath: '/api/tags'
+      preLoaderRoute: typeof ApiTagsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reviews/': {
+      id: '/api/reviews/'
+      path: '/api/reviews'
+      fullPath: '/api/reviews'
+      preLoaderRoute: typeof ApiReviewsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/review-pictures/': {
+      id: '/api/review-pictures/'
+      path: '/api/review-pictures'
+      fullPath: '/api/review-pictures'
+      preLoaderRoute: typeof ApiReviewPicturesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ratings/': {
+      id: '/api/ratings/'
+      path: '/api/ratings'
+      fullPath: '/api/ratings'
+      preLoaderRoute: typeof ApiRatingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/locations/': {
+      id: '/api/locations/'
+      path: '/api/locations'
+      fullPath: '/api/locations'
+      preLoaderRoute: typeof ApiLocationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/location-pictures/': {
+      id: '/api/location-pictures/'
+      path: '/api/location-pictures'
+      fullPath: '/api/location-pictures'
+      preLoaderRoute: typeof ApiLocationPicturesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/dishes/': {
+      id: '/api/dishes/'
+      path: '/api/dishes'
+      fullPath: '/api/dishes'
+      preLoaderRoute: typeof ApiDishesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/demo/start/server-funcs': {
       id: '/demo/start/server-funcs'
       path: '/demo/start/server-funcs'
@@ -388,6 +620,55 @@ declare module '@tanstack/react-router' {
       path: '/demo/api/names'
       fullPath: '/demo/api/names'
       preLoaderRoute: typeof DemoApiNamesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/tags/$id': {
+      id: '/api/tags/$id'
+      path: '/api/tags/$id'
+      fullPath: '/api/tags/$id'
+      preLoaderRoute: typeof ApiTagsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reviews/$id': {
+      id: '/api/reviews/$id'
+      path: '/api/reviews/$id'
+      fullPath: '/api/reviews/$id'
+      preLoaderRoute: typeof ApiReviewsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/review-pictures/$id': {
+      id: '/api/review-pictures/$id'
+      path: '/api/review-pictures/$id'
+      fullPath: '/api/review-pictures/$id'
+      preLoaderRoute: typeof ApiReviewPicturesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ratings/$id': {
+      id: '/api/ratings/$id'
+      path: '/api/ratings/$id'
+      fullPath: '/api/ratings/$id'
+      preLoaderRoute: typeof ApiRatingsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/locations/$id': {
+      id: '/api/locations/$id'
+      path: '/api/locations/$id'
+      fullPath: '/api/locations/$id'
+      preLoaderRoute: typeof ApiLocationsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/location-pictures/$id': {
+      id: '/api/location-pictures/$id'
+      path: '/api/location-pictures/$id'
+      fullPath: '/api/location-pictures/$id'
+      preLoaderRoute: typeof ApiLocationPicturesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/dishes/$id': {
+      id: '/api/dishes/$id'
+      path: '/api/dishes/$id'
+      fullPath: '/api/dishes/$id'
+      preLoaderRoute: typeof ApiDishesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/callback': {
@@ -451,12 +732,26 @@ const rootRouteChildren: RootRouteChildren = {
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   DemoWorkosRoute: DemoWorkosRoute,
   ApiAuthCallbackRoute: ApiAuthCallbackRoute,
+  ApiDishesIdRoute: ApiDishesIdRoute,
+  ApiLocationPicturesIdRoute: ApiLocationPicturesIdRoute,
+  ApiLocationsIdRoute: ApiLocationsIdRoute,
+  ApiRatingsIdRoute: ApiRatingsIdRoute,
+  ApiReviewPicturesIdRoute: ApiReviewPicturesIdRoute,
+  ApiReviewsIdRoute: ApiReviewsIdRoute,
+  ApiTagsIdRoute: ApiTagsIdRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoApiTqTodosRoute: DemoApiTqTodosRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
   DemoFormSimpleRoute: DemoFormSimpleRoute,
   DemoStartApiRequestRoute: DemoStartApiRequestRoute,
   DemoStartServerFuncsRoute: DemoStartServerFuncsRoute,
+  ApiDishesIndexRoute: ApiDishesIndexRoute,
+  ApiLocationPicturesIndexRoute: ApiLocationPicturesIndexRoute,
+  ApiLocationsIndexRoute: ApiLocationsIndexRoute,
+  ApiRatingsIndexRoute: ApiRatingsIndexRoute,
+  ApiReviewPicturesIndexRoute: ApiReviewPicturesIndexRoute,
+  ApiReviewsIndexRoute: ApiReviewsIndexRoute,
+  ApiTagsIndexRoute: ApiTagsIndexRoute,
   DemoStartSsrDataOnlyRoute: DemoStartSsrDataOnlyRoute,
   DemoStartSsrFullSsrRoute: DemoStartSsrFullSsrRoute,
   DemoStartSsrSpaModeRoute: DemoStartSsrSpaModeRoute,

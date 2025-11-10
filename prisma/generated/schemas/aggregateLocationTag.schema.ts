@@ -1,0 +1,12 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { LocationTagOrderByWithRelationInputObjectSchema as LocationTagOrderByWithRelationInputObjectSchema } from './objects/LocationTagOrderByWithRelationInput.schema';
+import { LocationTagWhereInputObjectSchema as LocationTagWhereInputObjectSchema } from './objects/LocationTagWhereInput.schema';
+import { LocationTagWhereUniqueInputObjectSchema as LocationTagWhereUniqueInputObjectSchema } from './objects/LocationTagWhereUniqueInput.schema';
+import { LocationTagCountAggregateInputObjectSchema as LocationTagCountAggregateInputObjectSchema } from './objects/LocationTagCountAggregateInput.schema';
+import { LocationTagMinAggregateInputObjectSchema as LocationTagMinAggregateInputObjectSchema } from './objects/LocationTagMinAggregateInput.schema';
+import { LocationTagMaxAggregateInputObjectSchema as LocationTagMaxAggregateInputObjectSchema } from './objects/LocationTagMaxAggregateInput.schema';
+
+export const LocationTagAggregateSchema: z.ZodType<Prisma.LocationTagAggregateArgs> = z.object({ orderBy: z.union([LocationTagOrderByWithRelationInputObjectSchema, LocationTagOrderByWithRelationInputObjectSchema.array()]).optional(), where: LocationTagWhereInputObjectSchema.optional(), cursor: LocationTagWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), LocationTagCountAggregateInputObjectSchema ]).optional(), _min: LocationTagMinAggregateInputObjectSchema.optional(), _max: LocationTagMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.LocationTagAggregateArgs>;
+
+export const LocationTagAggregateZodSchema = z.object({ orderBy: z.union([LocationTagOrderByWithRelationInputObjectSchema, LocationTagOrderByWithRelationInputObjectSchema.array()]).optional(), where: LocationTagWhereInputObjectSchema.optional(), cursor: LocationTagWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), LocationTagCountAggregateInputObjectSchema ]).optional(), _min: LocationTagMinAggregateInputObjectSchema.optional(), _max: LocationTagMaxAggregateInputObjectSchema.optional() }).strict();

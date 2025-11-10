@@ -1,0 +1,15 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { RatingWhereInputObjectSchema as RatingWhereInputObjectSchema } from './objects/RatingWhereInput.schema';
+import { RatingOrderByWithAggregationInputObjectSchema as RatingOrderByWithAggregationInputObjectSchema } from './objects/RatingOrderByWithAggregationInput.schema';
+import { RatingScalarWhereWithAggregatesInputObjectSchema as RatingScalarWhereWithAggregatesInputObjectSchema } from './objects/RatingScalarWhereWithAggregatesInput.schema';
+import { RatingScalarFieldEnumSchema } from './enums/RatingScalarFieldEnum.schema';
+import { RatingCountAggregateInputObjectSchema as RatingCountAggregateInputObjectSchema } from './objects/RatingCountAggregateInput.schema';
+import { RatingMinAggregateInputObjectSchema as RatingMinAggregateInputObjectSchema } from './objects/RatingMinAggregateInput.schema';
+import { RatingMaxAggregateInputObjectSchema as RatingMaxAggregateInputObjectSchema } from './objects/RatingMaxAggregateInput.schema';
+import { RatingAvgAggregateInputObjectSchema as RatingAvgAggregateInputObjectSchema } from './objects/RatingAvgAggregateInput.schema';
+import { RatingSumAggregateInputObjectSchema as RatingSumAggregateInputObjectSchema } from './objects/RatingSumAggregateInput.schema';
+
+export const RatingGroupBySchema: z.ZodType<Prisma.RatingGroupByArgs> = z.object({ where: RatingWhereInputObjectSchema.optional(), orderBy: z.union([RatingOrderByWithAggregationInputObjectSchema, RatingOrderByWithAggregationInputObjectSchema.array()]).optional(), having: RatingScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(RatingScalarFieldEnumSchema), _count: z.union([ z.literal(true), RatingCountAggregateInputObjectSchema ]).optional(), _min: RatingMinAggregateInputObjectSchema.optional(), _max: RatingMaxAggregateInputObjectSchema.optional(), _avg: RatingAvgAggregateInputObjectSchema.optional(), _sum: RatingSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.RatingGroupByArgs>;
+
+export const RatingGroupByZodSchema = z.object({ where: RatingWhereInputObjectSchema.optional(), orderBy: z.union([RatingOrderByWithAggregationInputObjectSchema, RatingOrderByWithAggregationInputObjectSchema.array()]).optional(), having: RatingScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(RatingScalarFieldEnumSchema), _count: z.union([ z.literal(true), RatingCountAggregateInputObjectSchema ]).optional(), _min: RatingMinAggregateInputObjectSchema.optional(), _max: RatingMaxAggregateInputObjectSchema.optional(), _avg: RatingAvgAggregateInputObjectSchema.optional(), _sum: RatingSumAggregateInputObjectSchema.optional() }).strict();

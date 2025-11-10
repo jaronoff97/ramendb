@@ -1,0 +1,13 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { RatingPictureWhereInputObjectSchema as RatingPictureWhereInputObjectSchema } from './objects/RatingPictureWhereInput.schema';
+import { RatingPictureOrderByWithAggregationInputObjectSchema as RatingPictureOrderByWithAggregationInputObjectSchema } from './objects/RatingPictureOrderByWithAggregationInput.schema';
+import { RatingPictureScalarWhereWithAggregatesInputObjectSchema as RatingPictureScalarWhereWithAggregatesInputObjectSchema } from './objects/RatingPictureScalarWhereWithAggregatesInput.schema';
+import { RatingPictureScalarFieldEnumSchema } from './enums/RatingPictureScalarFieldEnum.schema';
+import { RatingPictureCountAggregateInputObjectSchema as RatingPictureCountAggregateInputObjectSchema } from './objects/RatingPictureCountAggregateInput.schema';
+import { RatingPictureMinAggregateInputObjectSchema as RatingPictureMinAggregateInputObjectSchema } from './objects/RatingPictureMinAggregateInput.schema';
+import { RatingPictureMaxAggregateInputObjectSchema as RatingPictureMaxAggregateInputObjectSchema } from './objects/RatingPictureMaxAggregateInput.schema';
+
+export const RatingPictureGroupBySchema: z.ZodType<Prisma.RatingPictureGroupByArgs> = z.object({ where: RatingPictureWhereInputObjectSchema.optional(), orderBy: z.union([RatingPictureOrderByWithAggregationInputObjectSchema, RatingPictureOrderByWithAggregationInputObjectSchema.array()]).optional(), having: RatingPictureScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(RatingPictureScalarFieldEnumSchema), _count: z.union([ z.literal(true), RatingPictureCountAggregateInputObjectSchema ]).optional(), _min: RatingPictureMinAggregateInputObjectSchema.optional(), _max: RatingPictureMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.RatingPictureGroupByArgs>;
+
+export const RatingPictureGroupByZodSchema = z.object({ where: RatingPictureWhereInputObjectSchema.optional(), orderBy: z.union([RatingPictureOrderByWithAggregationInputObjectSchema, RatingPictureOrderByWithAggregationInputObjectSchema.array()]).optional(), having: RatingPictureScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(RatingPictureScalarFieldEnumSchema), _count: z.union([ z.literal(true), RatingPictureCountAggregateInputObjectSchema ]).optional(), _min: RatingPictureMinAggregateInputObjectSchema.optional(), _max: RatingPictureMaxAggregateInputObjectSchema.optional() }).strict();

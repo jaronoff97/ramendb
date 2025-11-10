@@ -1,0 +1,12 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { RatingPictureOrderByWithRelationInputObjectSchema as RatingPictureOrderByWithRelationInputObjectSchema } from './objects/RatingPictureOrderByWithRelationInput.schema';
+import { RatingPictureWhereInputObjectSchema as RatingPictureWhereInputObjectSchema } from './objects/RatingPictureWhereInput.schema';
+import { RatingPictureWhereUniqueInputObjectSchema as RatingPictureWhereUniqueInputObjectSchema } from './objects/RatingPictureWhereUniqueInput.schema';
+import { RatingPictureCountAggregateInputObjectSchema as RatingPictureCountAggregateInputObjectSchema } from './objects/RatingPictureCountAggregateInput.schema';
+import { RatingPictureMinAggregateInputObjectSchema as RatingPictureMinAggregateInputObjectSchema } from './objects/RatingPictureMinAggregateInput.schema';
+import { RatingPictureMaxAggregateInputObjectSchema as RatingPictureMaxAggregateInputObjectSchema } from './objects/RatingPictureMaxAggregateInput.schema';
+
+export const RatingPictureAggregateSchema: z.ZodType<Prisma.RatingPictureAggregateArgs> = z.object({ orderBy: z.union([RatingPictureOrderByWithRelationInputObjectSchema, RatingPictureOrderByWithRelationInputObjectSchema.array()]).optional(), where: RatingPictureWhereInputObjectSchema.optional(), cursor: RatingPictureWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), RatingPictureCountAggregateInputObjectSchema ]).optional(), _min: RatingPictureMinAggregateInputObjectSchema.optional(), _max: RatingPictureMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.RatingPictureAggregateArgs>;
+
+export const RatingPictureAggregateZodSchema = z.object({ orderBy: z.union([RatingPictureOrderByWithRelationInputObjectSchema, RatingPictureOrderByWithRelationInputObjectSchema.array()]).optional(), where: RatingPictureWhereInputObjectSchema.optional(), cursor: RatingPictureWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), RatingPictureCountAggregateInputObjectSchema ]).optional(), _min: RatingPictureMinAggregateInputObjectSchema.optional(), _max: RatingPictureMaxAggregateInputObjectSchema.optional() }).strict();

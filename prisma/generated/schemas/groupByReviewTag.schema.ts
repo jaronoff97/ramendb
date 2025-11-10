@@ -1,0 +1,13 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { ReviewTagWhereInputObjectSchema as ReviewTagWhereInputObjectSchema } from './objects/ReviewTagWhereInput.schema';
+import { ReviewTagOrderByWithAggregationInputObjectSchema as ReviewTagOrderByWithAggregationInputObjectSchema } from './objects/ReviewTagOrderByWithAggregationInput.schema';
+import { ReviewTagScalarWhereWithAggregatesInputObjectSchema as ReviewTagScalarWhereWithAggregatesInputObjectSchema } from './objects/ReviewTagScalarWhereWithAggregatesInput.schema';
+import { ReviewTagScalarFieldEnumSchema } from './enums/ReviewTagScalarFieldEnum.schema';
+import { ReviewTagCountAggregateInputObjectSchema as ReviewTagCountAggregateInputObjectSchema } from './objects/ReviewTagCountAggregateInput.schema';
+import { ReviewTagMinAggregateInputObjectSchema as ReviewTagMinAggregateInputObjectSchema } from './objects/ReviewTagMinAggregateInput.schema';
+import { ReviewTagMaxAggregateInputObjectSchema as ReviewTagMaxAggregateInputObjectSchema } from './objects/ReviewTagMaxAggregateInput.schema';
+
+export const ReviewTagGroupBySchema: z.ZodType<Prisma.ReviewTagGroupByArgs> = z.object({ where: ReviewTagWhereInputObjectSchema.optional(), orderBy: z.union([ReviewTagOrderByWithAggregationInputObjectSchema, ReviewTagOrderByWithAggregationInputObjectSchema.array()]).optional(), having: ReviewTagScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(ReviewTagScalarFieldEnumSchema), _count: z.union([ z.literal(true), ReviewTagCountAggregateInputObjectSchema ]).optional(), _min: ReviewTagMinAggregateInputObjectSchema.optional(), _max: ReviewTagMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.ReviewTagGroupByArgs>;
+
+export const ReviewTagGroupByZodSchema = z.object({ where: ReviewTagWhereInputObjectSchema.optional(), orderBy: z.union([ReviewTagOrderByWithAggregationInputObjectSchema, ReviewTagOrderByWithAggregationInputObjectSchema.array()]).optional(), having: ReviewTagScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(ReviewTagScalarFieldEnumSchema), _count: z.union([ z.literal(true), ReviewTagCountAggregateInputObjectSchema ]).optional(), _min: ReviewTagMinAggregateInputObjectSchema.optional(), _max: ReviewTagMaxAggregateInputObjectSchema.optional() }).strict();
