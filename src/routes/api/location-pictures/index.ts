@@ -9,7 +9,7 @@ export const Route = createFileRoute('/api/location-pictures/')({
       createHandlers({
         GET: {
           handler: async () => {
-            const locationPictures = await prisma.locationPicture.findMany({ include: { tags: { include: { tag: true } } } })
+            const locationPictures = await prisma.locationPicture.findMany()
             return Response.json(locationPictures)
           }
         },

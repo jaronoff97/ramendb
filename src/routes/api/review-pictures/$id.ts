@@ -1,35 +1,47 @@
-// src/routes/api/reviews/$id.ts
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router'
+import { ReviewPictureUpdateInputObjectSchema } from 'prisma/generated/schemas'
 import { prisma } from '@/lib/prisma'
+import { authMiddleware } from '@/lib/middlewares/require-auth'
 
 export const Route = createFileRoute('/api/review-pictures/$id')({
-
   server: {
-    handlers: {
-      async GET({ params }) {
-        const review = await prisma.review.findUnique({
-          where: { id: params.id },
-          include: {
-            user: true,
-            location: true,
-            tags: { include: { tag: true } },
-            pictures: true,
-          },
-        })
-        return Response.json(review)
-      },
-      async PUT({ request, params }) {
-        const body = await request.json()
-        const updated = await prisma.review.update({
-          where: { id: params.id },
-          data: body,
-        })
-        return Response.json(updated)
-      },
-      async DELETE({ params }) {
-        await prisma.review.delete({ where: { id: params.id } })
-        return new Response(null, { status: 204 })
-      },
-    }
+    handlers: ({ createHandlers }) =>
+      createHandlers({
+        GET: {
+          handler: async ({ params }) => {
+            const reviewPicture = await prisma.reviewPicture.findUnique({
+              where: { id: params.id },
+              include: { reviewPictures: { include: { reviewPicture: true } }, pictures: true },
+            })
+
+            if (!reviewPicture) {
+              return new Response('ReviewPicture not found', { status: 404 })
+            }
+
+            return Response.json(reviewPicture)
+          }
+        },
+        PUT: {
+          middleware: [authMiddleware],
+          handler: async ({ request, params }) => {
+            const body = await request.json()
+            const data = ReviewPictureUpdateInputObjectSchema.parse(body)
+
+            const updated = await prisma.reviewPicture.update({
+              where: { id: params.id },
+              data
+            })
+
+            return Response.json(updated)
+          }
+        },
+        DELETE: {
+          middleware: [authMiddleware],
+          handler: async ({ params }) => {
+            await prisma.reviewPicture.delete({ where: { id: params.id } })
+            return new Response(null, { status: 204 })
+          }
+        },
+      })
   }
 })

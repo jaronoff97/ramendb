@@ -9,7 +9,7 @@ export const Route = createFileRoute('/api/dishes/')({
       createHandlers({
         GET: {
           handler: async () => {
-            const dishes = await prisma.tag.findMany({ include: { tags: { include: { tag: true } } } })
+            const dishes = await prisma.dish.findMany()
             return Response.json(dishes)
           }
         },
