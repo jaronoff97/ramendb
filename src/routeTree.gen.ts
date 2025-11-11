@@ -39,12 +39,17 @@ import { Route as ApiLocationsIdRouteImport } from './routes/api/locations/$id'
 import { Route as ApiLocationPicturesIdRouteImport } from './routes/api/location-pictures/$id'
 import { Route as ApiDishesIdRouteImport } from './routes/api/dishes/$id'
 import { Route as ApiAuthCallbackRouteImport } from './routes/api/auth/callback'
-import { Route as AuthenticatedReviewsNewRouteImport } from './routes/_authenticated/reviews/new'
 import { Route as AuthenticatedReviewsIdRouteImport } from './routes/_authenticated/reviews/$id'
+import { Route as AuthenticatedReviewsNewRouteRouteImport } from './routes/_authenticated/reviews/new/route'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
 import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr.spa-mode'
 import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
 import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ssr.data-only'
+import { Route as AuthenticatedReviewsNewSuccessRouteImport } from './routes/_authenticated/reviews/new/success'
+import { Route as AuthenticatedReviewsNewReviewRouteImport } from './routes/_authenticated/reviews/new/review'
+import { Route as AuthenticatedReviewsNewRatingRouteImport } from './routes/_authenticated/reviews/new/rating'
+import { Route as AuthenticatedReviewsNewPicturesRouteImport } from './routes/_authenticated/reviews/new/pictures'
+import { Route as AuthenticatedReviewsNewLocationRouteImport } from './routes/_authenticated/reviews/new/location'
 
 const LogoutRoute = LogoutRouteImport.update({
   id: '/logout',
@@ -197,16 +202,17 @@ const ApiAuthCallbackRoute = ApiAuthCallbackRouteImport.update({
   path: '/api/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedReviewsNewRoute = AuthenticatedReviewsNewRouteImport.update({
-  id: '/reviews/new',
-  path: '/reviews/new',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedReviewsIdRoute = AuthenticatedReviewsIdRouteImport.update({
   id: '/reviews/$id',
   path: '/reviews/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedReviewsNewRouteRoute =
+  AuthenticatedReviewsNewRouteRouteImport.update({
+    id: '/reviews/new',
+    path: '/reviews/new',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const DemoStartSsrIndexRoute = DemoStartSsrIndexRouteImport.update({
   id: '/demo/start/ssr/',
   path: '/demo/start/ssr/',
@@ -227,6 +233,36 @@ const DemoStartSsrDataOnlyRoute = DemoStartSsrDataOnlyRouteImport.update({
   path: '/demo/start/ssr/data-only',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedReviewsNewSuccessRoute =
+  AuthenticatedReviewsNewSuccessRouteImport.update({
+    id: '/success',
+    path: '/success',
+    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
+  } as any)
+const AuthenticatedReviewsNewReviewRoute =
+  AuthenticatedReviewsNewReviewRouteImport.update({
+    id: '/review',
+    path: '/review',
+    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
+  } as any)
+const AuthenticatedReviewsNewRatingRoute =
+  AuthenticatedReviewsNewRatingRouteImport.update({
+    id: '/rating',
+    path: '/rating',
+    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
+  } as any)
+const AuthenticatedReviewsNewPicturesRoute =
+  AuthenticatedReviewsNewPicturesRouteImport.update({
+    id: '/pictures',
+    path: '/pictures',
+    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
+  } as any)
+const AuthenticatedReviewsNewLocationRoute =
+  AuthenticatedReviewsNewLocationRouteImport.update({
+    id: '/location',
+    path: '/location',
+    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -236,8 +272,8 @@ export interface FileRoutesByFullPath {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/workos': typeof DemoWorkosRoute
+  '/reviews/new': typeof AuthenticatedReviewsNewRouteRouteWithChildren
   '/reviews/$id': typeof AuthenticatedReviewsIdRoute
-  '/reviews/new': typeof AuthenticatedReviewsNewRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/dishes/$id': typeof ApiDishesIdRoute
   '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
@@ -260,6 +296,11 @@ export interface FileRoutesByFullPath {
   '/api/review-pictures': typeof ApiReviewPicturesIndexRoute
   '/api/reviews': typeof ApiReviewsIndexRoute
   '/api/tags': typeof ApiTagsIndexRoute
+  '/reviews/new/location': typeof AuthenticatedReviewsNewLocationRoute
+  '/reviews/new/pictures': typeof AuthenticatedReviewsNewPicturesRoute
+  '/reviews/new/rating': typeof AuthenticatedReviewsNewRatingRoute
+  '/reviews/new/review': typeof AuthenticatedReviewsNewReviewRoute
+  '/reviews/new/success': typeof AuthenticatedReviewsNewSuccessRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -273,8 +314,8 @@ export interface FileRoutesByTo {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/workos': typeof DemoWorkosRoute
+  '/reviews/new': typeof AuthenticatedReviewsNewRouteRouteWithChildren
   '/reviews/$id': typeof AuthenticatedReviewsIdRoute
-  '/reviews/new': typeof AuthenticatedReviewsNewRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/dishes/$id': typeof ApiDishesIdRoute
   '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
@@ -297,6 +338,11 @@ export interface FileRoutesByTo {
   '/api/review-pictures': typeof ApiReviewPicturesIndexRoute
   '/api/reviews': typeof ApiReviewsIndexRoute
   '/api/tags': typeof ApiTagsIndexRoute
+  '/reviews/new/location': typeof AuthenticatedReviewsNewLocationRoute
+  '/reviews/new/pictures': typeof AuthenticatedReviewsNewPicturesRoute
+  '/reviews/new/rating': typeof AuthenticatedReviewsNewRatingRoute
+  '/reviews/new/review': typeof AuthenticatedReviewsNewReviewRoute
+  '/reviews/new/success': typeof AuthenticatedReviewsNewSuccessRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -312,8 +358,8 @@ export interface FileRoutesById {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/workos': typeof DemoWorkosRoute
+  '/_authenticated/reviews/new': typeof AuthenticatedReviewsNewRouteRouteWithChildren
   '/_authenticated/reviews/$id': typeof AuthenticatedReviewsIdRoute
-  '/_authenticated/reviews/new': typeof AuthenticatedReviewsNewRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/dishes/$id': typeof ApiDishesIdRoute
   '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
@@ -336,6 +382,11 @@ export interface FileRoutesById {
   '/api/review-pictures/': typeof ApiReviewPicturesIndexRoute
   '/api/reviews/': typeof ApiReviewsIndexRoute
   '/api/tags/': typeof ApiTagsIndexRoute
+  '/_authenticated/reviews/new/location': typeof AuthenticatedReviewsNewLocationRoute
+  '/_authenticated/reviews/new/pictures': typeof AuthenticatedReviewsNewPicturesRoute
+  '/_authenticated/reviews/new/rating': typeof AuthenticatedReviewsNewRatingRoute
+  '/_authenticated/reviews/new/review': typeof AuthenticatedReviewsNewReviewRoute
+  '/_authenticated/reviews/new/success': typeof AuthenticatedReviewsNewSuccessRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -351,8 +402,8 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/workos'
-    | '/reviews/$id'
     | '/reviews/new'
+    | '/reviews/$id'
     | '/api/auth/callback'
     | '/api/dishes/$id'
     | '/api/location-pictures/$id'
@@ -375,6 +426,11 @@ export interface FileRouteTypes {
     | '/api/review-pictures'
     | '/api/reviews'
     | '/api/tags'
+    | '/reviews/new/location'
+    | '/reviews/new/pictures'
+    | '/reviews/new/rating'
+    | '/reviews/new/review'
+    | '/reviews/new/success'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -388,8 +444,8 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/workos'
-    | '/reviews/$id'
     | '/reviews/new'
+    | '/reviews/$id'
     | '/api/auth/callback'
     | '/api/dishes/$id'
     | '/api/location-pictures/$id'
@@ -412,6 +468,11 @@ export interface FileRouteTypes {
     | '/api/review-pictures'
     | '/api/reviews'
     | '/api/tags'
+    | '/reviews/new/location'
+    | '/reviews/new/pictures'
+    | '/reviews/new/rating'
+    | '/reviews/new/review'
+    | '/reviews/new/success'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -426,8 +487,8 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/workos'
-    | '/_authenticated/reviews/$id'
     | '/_authenticated/reviews/new'
+    | '/_authenticated/reviews/$id'
     | '/api/auth/callback'
     | '/api/dishes/$id'
     | '/api/location-pictures/$id'
@@ -450,6 +511,11 @@ export interface FileRouteTypes {
     | '/api/review-pictures/'
     | '/api/reviews/'
     | '/api/tags/'
+    | '/_authenticated/reviews/new/location'
+    | '/_authenticated/reviews/new/pictures'
+    | '/_authenticated/reviews/new/rating'
+    | '/_authenticated/reviews/new/review'
+    | '/_authenticated/reviews/new/success'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -703,18 +769,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/reviews/new': {
-      id: '/_authenticated/reviews/new'
-      path: '/reviews/new'
-      fullPath: '/reviews/new'
-      preLoaderRoute: typeof AuthenticatedReviewsNewRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/reviews/$id': {
       id: '/_authenticated/reviews/$id'
       path: '/reviews/$id'
       fullPath: '/reviews/$id'
       preLoaderRoute: typeof AuthenticatedReviewsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/reviews/new': {
+      id: '/_authenticated/reviews/new'
+      path: '/reviews/new'
+      fullPath: '/reviews/new'
+      preLoaderRoute: typeof AuthenticatedReviewsNewRouteRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/demo/start/ssr/': {
@@ -745,20 +811,78 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoStartSsrDataOnlyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/reviews/new/success': {
+      id: '/_authenticated/reviews/new/success'
+      path: '/success'
+      fullPath: '/reviews/new/success'
+      preLoaderRoute: typeof AuthenticatedReviewsNewSuccessRouteImport
+      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
+    }
+    '/_authenticated/reviews/new/review': {
+      id: '/_authenticated/reviews/new/review'
+      path: '/review'
+      fullPath: '/reviews/new/review'
+      preLoaderRoute: typeof AuthenticatedReviewsNewReviewRouteImport
+      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
+    }
+    '/_authenticated/reviews/new/rating': {
+      id: '/_authenticated/reviews/new/rating'
+      path: '/rating'
+      fullPath: '/reviews/new/rating'
+      preLoaderRoute: typeof AuthenticatedReviewsNewRatingRouteImport
+      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
+    }
+    '/_authenticated/reviews/new/pictures': {
+      id: '/_authenticated/reviews/new/pictures'
+      path: '/pictures'
+      fullPath: '/reviews/new/pictures'
+      preLoaderRoute: typeof AuthenticatedReviewsNewPicturesRouteImport
+      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
+    }
+    '/_authenticated/reviews/new/location': {
+      id: '/_authenticated/reviews/new/location'
+      path: '/location'
+      fullPath: '/reviews/new/location'
+      preLoaderRoute: typeof AuthenticatedReviewsNewLocationRouteImport
+      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
+    }
   }
 }
 
+interface AuthenticatedReviewsNewRouteRouteChildren {
+  AuthenticatedReviewsNewLocationRoute: typeof AuthenticatedReviewsNewLocationRoute
+  AuthenticatedReviewsNewPicturesRoute: typeof AuthenticatedReviewsNewPicturesRoute
+  AuthenticatedReviewsNewRatingRoute: typeof AuthenticatedReviewsNewRatingRoute
+  AuthenticatedReviewsNewReviewRoute: typeof AuthenticatedReviewsNewReviewRoute
+  AuthenticatedReviewsNewSuccessRoute: typeof AuthenticatedReviewsNewSuccessRoute
+}
+
+const AuthenticatedReviewsNewRouteRouteChildren: AuthenticatedReviewsNewRouteRouteChildren =
+  {
+    AuthenticatedReviewsNewLocationRoute: AuthenticatedReviewsNewLocationRoute,
+    AuthenticatedReviewsNewPicturesRoute: AuthenticatedReviewsNewPicturesRoute,
+    AuthenticatedReviewsNewRatingRoute: AuthenticatedReviewsNewRatingRoute,
+    AuthenticatedReviewsNewReviewRoute: AuthenticatedReviewsNewReviewRoute,
+    AuthenticatedReviewsNewSuccessRoute: AuthenticatedReviewsNewSuccessRoute,
+  }
+
+const AuthenticatedReviewsNewRouteRouteWithChildren =
+  AuthenticatedReviewsNewRouteRoute._addFileChildren(
+    AuthenticatedReviewsNewRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedReviewsNewRouteRoute: typeof AuthenticatedReviewsNewRouteRouteWithChildren
   AuthenticatedReviewsIdRoute: typeof AuthenticatedReviewsIdRoute
-  AuthenticatedReviewsNewRoute: typeof AuthenticatedReviewsNewRoute
   AuthenticatedReviewsIndexRoute: typeof AuthenticatedReviewsIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedReviewsNewRouteRoute:
+    AuthenticatedReviewsNewRouteRouteWithChildren,
   AuthenticatedReviewsIdRoute: AuthenticatedReviewsIdRoute,
-  AuthenticatedReviewsNewRoute: AuthenticatedReviewsNewRoute,
   AuthenticatedReviewsIndexRoute: AuthenticatedReviewsIndexRoute,
 }
 

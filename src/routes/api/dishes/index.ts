@@ -17,8 +17,11 @@ export const Route = createFileRoute('/api/dishes/')({
           middleware: [authMiddleware],
           handler: async ({ request }) => {
             const body = await request.json()
-            const data = DishCreateInputObjectSchema.parse(body)
-            const dish = await prisma.dish.create({ data })
+            const data = DishCreateInputObjectSchema.safeParse(body)
+            if (!data.success) {
+              return Response.json(data.error, { status: 400 })
+            }
+            const dish = await prisma.dish.create({ data: data.data })
             return Response.json(dish)
           }
         },

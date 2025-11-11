@@ -25,11 +25,14 @@ export const Route = createFileRoute('/api/reviews/$id')({
           middleware: [authMiddleware],
           handler: async ({ request, params }) => {
             const body = await request.json()
-            const data = ReviewUpdateInputObjectSchema.parse(body)
+            const data = ReviewUpdateInputObjectSchema.safeParse(body)
+            if (!data.success) {
+              return Response.json(data.error, { status: 400 })
+            }
 
             const updated = await prisma.review.update({
               where: { id: params.id },
-              data
+              data: data.data
             })
 
             return Response.json(updated)

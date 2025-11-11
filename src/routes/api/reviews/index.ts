@@ -17,8 +17,11 @@ export const Route = createFileRoute('/api/reviews/')({
           middleware: [authMiddleware],
           handler: async ({ request }) => {
             const body = await request.json()
-            const data = ReviewCreateInputObjectSchema.parse(body)
-            const review = await prisma.review.create({ data })
+            const data = ReviewCreateInputObjectSchema.safeParse(body)
+            if (!data.success) {
+              return Response.json(data.error, { status: 400 })
+            }
+            const review = await prisma.review.create({ data: data.data })
             return Response.json(review)
           }
         },

@@ -11,7 +11,6 @@ export const Route = createFileRoute('/api/ratings/$id')({
           handler: async ({ params }) => {
             const rating = await prisma.rating.findUnique({
               where: { id: params.id },
-              include: { tags: { include: { tag: true } }, pictures: true },
             })
 
             if (!rating) {
@@ -26,11 +25,14 @@ export const Route = createFileRoute('/api/ratings/$id')({
           handler: async ({ request, params }) => {
             const body = await request.json()
             // LocationCreateInputObjectSchema
-            const data = RatingUpdateInputObjectSchema.parse(body)
+            const data = RatingUpdateInputObjectSchema.safeParse(body)
+            if (!data.success) {
+              return Response.json(data.error, { status: 400 })
+            }
 
             const updated = await prisma.rating.update({
               where: { id: params.id },
-              data
+              data: data.data
             })
 
             return Response.json(updated)

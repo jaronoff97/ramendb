@@ -11,7 +11,6 @@ export const Route = createFileRoute('/api/review-pictures/$id')({
           handler: async ({ params }) => {
             const reviewPicture = await prisma.reviewPicture.findUnique({
               where: { id: params.id },
-              include: { reviewPictures: { include: { reviewPicture: true } }, pictures: true },
             })
 
             if (!reviewPicture) {
@@ -25,11 +24,14 @@ export const Route = createFileRoute('/api/review-pictures/$id')({
           middleware: [authMiddleware],
           handler: async ({ request, params }) => {
             const body = await request.json()
-            const data = ReviewPictureUpdateInputObjectSchema.parse(body)
+            const data = ReviewPictureUpdateInputObjectSchema.safeParse(body)
+            if (!data.success) {
+              return Response.json(data.error, { status: 400 })
+            }
 
             const updated = await prisma.reviewPicture.update({
               where: { id: params.id },
-              data
+              data: data.data
             })
 
             return Response.json(updated)

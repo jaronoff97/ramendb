@@ -26,7 +26,10 @@ export const Route = createFileRoute('/api/locations/$id')({
           handler: async ({ request, params }) => {
             const body = await request.json()
             // LocationCreateInputObjectSchema
-            const data = LocationUpdateInputObjectSchema.parse(body)
+            const data = LocationUpdateInputObjectSchema.safeParse(body)
+            if (!data.success) {
+              return Response.json(data.error, { status: 400 })
+            }
 
             const updated = await prisma.location.update({
               where: { id: params.id },

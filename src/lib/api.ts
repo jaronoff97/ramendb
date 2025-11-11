@@ -1,7 +1,14 @@
+import { getAuth } from "./workos/server-functions";
+
 export async function apiFetch<T = any>(input: RequestInfo, init?: RequestInit): Promise<T> {
+  const { accessToken } = await getAuth();
   const res = await fetch(input, {
     credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+      ...(init?.headers || {})
+    },
     ...init,
   });
 

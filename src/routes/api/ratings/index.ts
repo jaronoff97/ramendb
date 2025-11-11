@@ -17,8 +17,11 @@ export const Route = createFileRoute('/api/ratings/')({
           middleware: [authMiddleware],
           handler: async ({ request }) => {
             const body = await request.json()
-            const data = RatingCreateInputObjectSchema.parse(body)
-            const rating = await prisma.rating.create({ data })
+            const data = RatingCreateInputObjectSchema.safeParse(body)
+            if (!data.success) {
+              return Response.json(data.error, { status: 400 })
+            }
+            const rating = await prisma.rating.create({ data: data.data })
             return Response.json(rating)
           }
         },

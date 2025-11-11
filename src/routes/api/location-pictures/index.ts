@@ -17,8 +17,11 @@ export const Route = createFileRoute('/api/location-pictures/')({
           middleware: [authMiddleware],
           handler: async ({ request }) => {
             const body = await request.json()
-            const data = LocationPictureCreateInputObjectSchema.parse(body)
-            const locationPicture = await prisma.locationPicture.create({ data })
+            const data = LocationPictureCreateInputObjectSchema.safeParse(body)
+            if (!data.success) {
+              return Response.json(data.error, { status: 400 })
+            }
+            const locationPicture = await prisma.locationPicture.create({ data: data.data })
             return Response.json(locationPicture)
           }
         },

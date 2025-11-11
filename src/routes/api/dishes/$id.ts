@@ -11,7 +11,6 @@ export const Route = createFileRoute('/api/dishes/$id')({
           handler: async ({ params }) => {
             const dish = await prisma.dish.findUnique({
               where: { id: params.id },
-              include: { dishs: { include: { dish: true } }, pictures: true },
             })
 
             if (!dish) {
@@ -25,11 +24,14 @@ export const Route = createFileRoute('/api/dishes/$id')({
           middleware: [authMiddleware],
           handler: async ({ request, params }) => {
             const body = await request.json()
-            const data = DishUpdateInputObjectSchema.parse(body)
+            const data = DishUpdateInputObjectSchema.safeParse(body)
+            if (!data.success) {
+              return Response.json(data.error, { status: 400 })
+            }
 
             const updated = await prisma.dish.update({
               where: { id: params.id },
-              data
+              data: data.data
             })
 
             return Response.json(updated)
