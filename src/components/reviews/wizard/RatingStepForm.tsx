@@ -50,7 +50,6 @@ export function RatingStepForm() {
       createRating
         .mutateAsync(newRating)
         .then((createdRating) => {
-          console.log({ msg: "GOT DATA", createdRating })
           setRating(createdRating.id)
           goNext()
         })

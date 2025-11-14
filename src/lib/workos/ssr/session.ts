@@ -103,7 +103,6 @@ const JWKS = lazy(() => createRemoteJWKSet(new URL(getWorkOS().userManagement.ge
 
 export async function verifyAccessToken(accessToken: string): Promise<boolean> {
   try {
-    console.log({ jwks: getWorkOS().userManagement.getJwksUrl(getConfig('clientId')) })
     await jwtVerify(accessToken, JWKS());
     return true;
   } catch {

@@ -60,7 +60,6 @@ export function ReviewStepForm() {
       createReview
         .mutateAsync(newReview)
         .then((createdReview) => {
-          console.log({ msg: "GOT DATA", createdReview })
           setReview(createdReview.id)
           goNext()
         })

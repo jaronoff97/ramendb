@@ -24,7 +24,6 @@ export function useCurrentStep(): REVIEW_STEP_ROUTE {
   const router = useRouter()
   const pathname = router.state.location.pathname
   const match = [...stepOrder].reverse().find(step => pathname.startsWith(step))
-  console.log({ pathname, match })
   return (match ?? REVIEW_STEPS.location)
 }
 
@@ -34,7 +33,6 @@ export function getStepNav(currentStep: REVIEW_STEP_ROUTE) {
   return {
     prev: () => stepOrder[index - 1] ?? currentStep,
     next: (hasLocation?: boolean) => {
-      console.log({ currentStep, hasLocation })
       // branching logic from pick
       if (currentStep === REVIEW_STEPS.pick) {
         return hasLocation ? REVIEW_STEPS.review : REVIEW_STEPS.location

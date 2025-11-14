@@ -28,7 +28,6 @@ export function ReviewEditor({ review }: Props) {
       onDynamic: () => ReviewUpdateInputObjectSchema,
     },
     onSubmit: ({ value }) => {
-      console.log({ value })
       // Prepare update object for Prisma
       const updateData: UpdateReviewInputType = {
         title: value.title,
