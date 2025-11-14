@@ -1,21 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   ReviewCreateInputObjectSchema,
-  ReviewUpdateInputObjectSchema,
+  ReviewUpdateInputObjectZodSchema
 } from 'prisma/generated/schemas'
+import type { z } from 'zod';
+import type {
+  ReviewPureType,
+  ReviewUpdateInputObjectSchema
+} from 'prisma/generated/schemas';
 import { apiFetch } from '@/lib/api'
+
+export type UpdateReviewInputType = z.input<typeof ReviewUpdateInputObjectSchema>;
 
 export function useReviews() {
   return useQuery({
     queryKey: ['reviews'],
-    queryFn: () => apiFetch<Array<any>>('/api/reviews/'),
+    queryFn: () => apiFetch<Array<ReviewPureType>>('/api/reviews/'),
   })
 }
 
 export function useReview(id?: string) {
   return useQuery({
     queryKey: ['reviews', id],
-    queryFn: () => apiFetch(`/api/reviews/${id}`),
+    queryFn: () => apiFetch<ReviewPureType>(`/api/reviews/${id}`),
     enabled: !!id,
   })
 }
@@ -42,12 +49,15 @@ export function useUpdateReview() {
       input,
     }: {
       id: string
-      input: unknown
+      input: UpdateReviewInputType
     }) => {
-      const data = ReviewUpdateInputObjectSchema.parse(input)
+      const parsed = ReviewUpdateInputObjectZodSchema.safeParse(input)
+      if (!parsed.success) {
+        return new Error(parsed.error.message)
+      }
       return apiFetch(`/api/reviews/${id}`, {
         method: 'PUT',
-        body: JSON.stringify(data),
+        body: JSON.stringify(parsed.data),
       })
     },
     onSuccess: (_data, { id }) => {

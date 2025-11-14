@@ -7,6 +7,7 @@ generator zod {
   provider                         = "prisma-zod-generator"
   createOptionalDefaultValuesTypes = true
   createRelationValuesTypes        = true
+  config = "zod-generator.config.json"
 }
 
 datasource db {
@@ -43,11 +44,16 @@ model Location {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  dishes   Dish[] /// @zod .optional()
-  ratings  Rating[] /// @zod .optional()
-  reviews  Review[] /// @zod .optional()
-  tags     LocationTag[] /// @zod .optional()
-  pictures LocationPicture[] /// @zod .optional()
+  /// @zod .optional()
+  dishes   Dish[]
+  /// @zod .optional()
+  ratings  Rating[]
+  /// @zod .optional()
+  reviews  Review[]
+  /// @zod .optional()
+  tags     LocationTag[]
+  /// @zod .optional()
+  pictures LocationPicture[]
 }
 
 model Dish {

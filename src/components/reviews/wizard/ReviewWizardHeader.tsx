@@ -1,20 +1,15 @@
-import { useRouter } from '@tanstack/react-router'
+import { useWizard } from './useWizard'
 import { Progress } from '@/components/ui/progress'
 
-const steps = ['location', 'review', 'pictures', 'rating'] as const
-
 export function ReviewWizardHeader() {
-  const router = useRouter()
-  const currentStep = router.state.location.pathname.split('/').pop() || 'location'
-  const currentIndex = steps.indexOf(currentStep as (typeof steps)[number])
-  const progress = ((currentIndex + 1) / steps.length) * 100
+  const { stepIndex, getProgress, currentStep } = useWizard()
 
   return (
     <div className="p-4 border-b space-y-2">
       <h2 className="text-lg font-semibold">Submit a Review</h2>
-      <Progress value={progress} />
+      <Progress value={getProgress()} />
       <p className="text-sm text-muted-foreground">
-        Step {currentIndex + 1} of {steps.length}: {currentStep}
+        Step {stepIndex + 1} of 6: {currentStep.split('/').pop()}
       </p>
     </div>
   )

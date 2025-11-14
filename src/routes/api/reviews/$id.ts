@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ReviewUpdateInputObjectSchema } from 'prisma/generated/schemas'
+import { ReviewResultSchema, ReviewUpdateInputObjectSchema } from 'prisma/generated/schemas'
 import { prisma } from '@/lib/prisma'
 import { authMiddleware } from '@/lib/middlewares/require-auth'
 
@@ -11,14 +11,18 @@ export const Route = createFileRoute('/api/reviews/$id')({
           handler: async ({ params }) => {
             const review = await prisma.review.findUnique({
               where: { id: params.id },
-              include: { tags: { include: { tag: true } }, pictures: true },
+              include: {
+                tags: { include: { tag: true } },
+                pictures: true,
+                location: true,
+                rating: true
+              },
             })
-
             if (!review) {
-              return new Response('Location not found', { status: 404 })
+              return new Response('Review not found', { status: 404 })
             }
-
-            return Response.json(review)
+            const data = ReviewResultSchema.parse(review)
+            return Response.json(data)
           }
         },
         PUT: {

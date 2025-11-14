@@ -1,23 +1,21 @@
 import { useAtom } from 'jotai'
-import { useNavigate } from '@tanstack/react-router'
-import { REVIEW_STEPS, getStepNav } from './steps'
-import { picturesAtom, reviewAtom } from '@/data/atoms/review-wizard-atoms'
+import { useWizard } from './useWizard'
+import { picturesAtom, reviewIdAtom } from '@/data/atoms/review-wizard-atoms'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 export function PicturesStepForm() {
   const [pictures, setPictures] = useAtom(picturesAtom)
-  const [review] = useAtom(reviewAtom)
-  const navigate = useNavigate();
-  const step = getStepNav(REVIEW_STEPS.pictures)
+  const [reviewId] = useAtom(reviewIdAtom)
+  const { goNext } = useWizard()
 
   function handleAdd(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files
-    if (!files || !review) return
+    if (!files || !reviewId) return
     const newPics = Array.from(files).map((f) => ({
       review: {
         connect: {
-          id: review.id
+          id: reviewId
         }
       },
       url: URL.createObjectURL(f)
@@ -26,7 +24,7 @@ export function PicturesStepForm() {
   }
 
   function handleDone() {
-    navigate({ to: step.next })
+    goNext()
   }
 
   return (

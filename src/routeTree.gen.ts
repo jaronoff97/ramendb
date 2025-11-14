@@ -42,6 +42,7 @@ import { Route as ApiAuthCallbackRouteImport } from './routes/api/auth/callback'
 import { Route as AuthenticatedReviewsIdRouteImport } from './routes/_authenticated/reviews/$id'
 import { Route as AuthenticatedReviewsNewRouteRouteImport } from './routes/_authenticated/reviews/new/route'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
+import { Route as AuthenticatedReviewsNewIndexRouteImport } from './routes/_authenticated/reviews/new/index'
 import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr.spa-mode'
 import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
 import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ssr.data-only'
@@ -218,6 +219,12 @@ const DemoStartSsrIndexRoute = DemoStartSsrIndexRouteImport.update({
   path: '/demo/start/ssr/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedReviewsNewIndexRoute =
+  AuthenticatedReviewsNewIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
+  } as any)
 const DemoStartSsrSpaModeRoute = DemoStartSsrSpaModeRouteImport.update({
   id: '/demo/start/ssr/spa-mode',
   path: '/demo/start/ssr/spa-mode',
@@ -304,6 +311,7 @@ export interface FileRoutesByFullPath {
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
+  '/reviews/new/': typeof AuthenticatedReviewsNewIndexRoute
   '/demo/start/ssr': typeof DemoStartSsrIndexRoute
 }
 export interface FileRoutesByTo {
@@ -314,7 +322,6 @@ export interface FileRoutesByTo {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/workos': typeof DemoWorkosRoute
-  '/reviews/new': typeof AuthenticatedReviewsNewRouteRouteWithChildren
   '/reviews/$id': typeof AuthenticatedReviewsIdRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/dishes/$id': typeof ApiDishesIdRoute
@@ -346,6 +353,7 @@ export interface FileRoutesByTo {
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
+  '/reviews/new': typeof AuthenticatedReviewsNewIndexRoute
   '/demo/start/ssr': typeof DemoStartSsrIndexRoute
 }
 export interface FileRoutesById {
@@ -390,6 +398,7 @@ export interface FileRoutesById {
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
+  '/_authenticated/reviews/new/': typeof AuthenticatedReviewsNewIndexRoute
   '/demo/start/ssr/': typeof DemoStartSsrIndexRoute
 }
 export interface FileRouteTypes {
@@ -434,6 +443,7 @@ export interface FileRouteTypes {
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
+    | '/reviews/new/'
     | '/demo/start/ssr'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -444,7 +454,6 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/workos'
-    | '/reviews/new'
     | '/reviews/$id'
     | '/api/auth/callback'
     | '/api/dishes/$id'
@@ -476,6 +485,7 @@ export interface FileRouteTypes {
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
+    | '/reviews/new'
     | '/demo/start/ssr'
   id:
     | '__root__'
@@ -519,6 +529,7 @@ export interface FileRouteTypes {
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
+    | '/_authenticated/reviews/new/'
     | '/demo/start/ssr/'
   fileRoutesById: FileRoutesById
 }
@@ -790,6 +801,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoStartSsrIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/reviews/new/': {
+      id: '/_authenticated/reviews/new/'
+      path: '/'
+      fullPath: '/reviews/new/'
+      preLoaderRoute: typeof AuthenticatedReviewsNewIndexRouteImport
+      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
+    }
     '/demo/start/ssr/spa-mode': {
       id: '/demo/start/ssr/spa-mode'
       path: '/demo/start/ssr/spa-mode'
@@ -855,6 +873,7 @@ interface AuthenticatedReviewsNewRouteRouteChildren {
   AuthenticatedReviewsNewRatingRoute: typeof AuthenticatedReviewsNewRatingRoute
   AuthenticatedReviewsNewReviewRoute: typeof AuthenticatedReviewsNewReviewRoute
   AuthenticatedReviewsNewSuccessRoute: typeof AuthenticatedReviewsNewSuccessRoute
+  AuthenticatedReviewsNewIndexRoute: typeof AuthenticatedReviewsNewIndexRoute
 }
 
 const AuthenticatedReviewsNewRouteRouteChildren: AuthenticatedReviewsNewRouteRouteChildren =
@@ -864,6 +883,7 @@ const AuthenticatedReviewsNewRouteRouteChildren: AuthenticatedReviewsNewRouteRou
     AuthenticatedReviewsNewRatingRoute: AuthenticatedReviewsNewRatingRoute,
     AuthenticatedReviewsNewReviewRoute: AuthenticatedReviewsNewReviewRoute,
     AuthenticatedReviewsNewSuccessRoute: AuthenticatedReviewsNewSuccessRoute,
+    AuthenticatedReviewsNewIndexRoute: AuthenticatedReviewsNewIndexRoute,
   }
 
 const AuthenticatedReviewsNewRouteRouteWithChildren =

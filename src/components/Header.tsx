@@ -1,29 +1,18 @@
 import { Link } from '@tanstack/react-router'
 
-
 import { useState } from 'react'
 import {
-  AppWindow,
-  ChevronDown,
-  ChevronRight,
-  CircleUserRound,
-  ClipboardType,
-  Home,
-  Menu,
-  Network,
-  SquareFunction,
-  StickyNote,
-  Store,
-  Table,
-  X,
+  AppWindow, Home,
+  Menu, X
 } from 'lucide-react'
-import WorkOSHeader from './workos-user.tsx'
+import SignInButton from './workos/signinbutton.tsx'
+import type { User } from '@workos-inc/node'
 
-export default function Header() {
+export default function Header({ user, signInUrl }: { user: User | null, signInUrl: string }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [groupedExpanded, setGroupedExpanded] = useState<
-    Record<string, boolean>
-  >({})
+  // const [groupedExpanded, setGroupedExpanded] = useState<
+  //   Record<string, boolean>
+  // >({})
 
   return (
     <>
@@ -90,7 +79,7 @@ export default function Header() {
         </nav>
 
         <div className="p-4 border-t border-gray-700 bg-gray-800 flex flex-col gap-2">
-          <WorkOSHeader />
+          <SignInButton user={user} url={signInUrl} large />
         </div>
       </aside>
     </>

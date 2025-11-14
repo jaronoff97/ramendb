@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { ReviewCreateInputObjectSchema } from 'prisma/generated/schemas';
+import { ReviewCreateInputObjectSchema, ReviewModelSchema } from 'prisma/generated/schemas';
 import { prisma } from '@/lib/prisma'
 import { authMiddleware } from '@/lib/middlewares/require-auth';
 
@@ -9,8 +9,17 @@ export const Route = createFileRoute('/api/reviews/')({
       createHandlers({
         GET: {
           handler: async () => {
-            const reviews = await prisma.review.findMany({ include: { tags: { include: { tag: true } } } })
-            return Response.json(reviews)
+            const reviews = await prisma.review.findMany({
+              include: {
+                location: true,        // include the related Location
+                user: true,            // include the related User
+                rating: true,          // include the Rating if it exists
+                pictures: true,        // include all pictures
+                tags: { include: { tag: true } }  // include the tag relations
+              }
+            })
+            const parsed = reviews.map(r => ReviewModelSchema.parse(r));
+            return Response.json(parsed);
           }
         },
         POST: {

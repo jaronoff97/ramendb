@@ -1,10 +1,10 @@
 import * as z from 'zod';
+import type { Prisma } from '@prisma/client';
 import { LocationCreateNestedOneWithoutReviewsInputObjectSchema as LocationCreateNestedOneWithoutReviewsInputObjectSchema } from './LocationCreateNestedOneWithoutReviewsInput.schema';
 import { UserCreateNestedOneWithoutReviewsInputObjectSchema as UserCreateNestedOneWithoutReviewsInputObjectSchema } from './UserCreateNestedOneWithoutReviewsInput.schema';
 import { RatingCreateNestedOneWithoutReviewsInputObjectSchema as RatingCreateNestedOneWithoutReviewsInputObjectSchema } from './RatingCreateNestedOneWithoutReviewsInput.schema';
 import { ReviewPictureCreateNestedManyWithoutReviewInputObjectSchema as ReviewPictureCreateNestedManyWithoutReviewInputObjectSchema } from './ReviewPictureCreateNestedManyWithoutReviewInput.schema';
 import { ReviewTagCreateNestedManyWithoutReviewInputObjectSchema as ReviewTagCreateNestedManyWithoutReviewInputObjectSchema } from './ReviewTagCreateNestedManyWithoutReviewInput.schema'
-import type { Prisma } from '@prisma/client';
 
 const makeSchema = () => z.object({
   id: z.string().optional(),

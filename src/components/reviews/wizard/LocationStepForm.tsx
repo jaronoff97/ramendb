@@ -1,19 +1,17 @@
 import { useForm } from '@tanstack/react-form'
 import { useSetAtom } from 'jotai'
 import { LocationCreateInputObjectSchema } from 'prisma/generated/schemas'
-import { useNavigate } from '@tanstack/react-router'
-import { REVIEW_STEPS, getStepNav } from './steps'
+import { useWizard } from './useWizard'
 import type { LocationInput } from '@/lib/mutations/useCreateLocation';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { locationAtom } from '@/data/atoms/review-wizard-atoms'
+import { locationIdAtom } from '@/data/atoms/review-wizard-atoms'
 import { useCreateLocation } from '@/lib/mutations/useCreateLocation'
 
 export function LocationStepForm() {
-  const setLocation = useSetAtom(locationAtom)
-  const navigate = useNavigate()
-  const step = getStepNav(REVIEW_STEPS.location)
+  const setLocation = useSetAtom(locationIdAtom)
   const createLocation = useCreateLocation();
+  const { goNext } = useWizard()
 
   const form = useForm({
     validators: {
@@ -27,15 +25,17 @@ export function LocationStepForm() {
         country: value.country,
         type: value.type,
         slug: value.name.toLowerCase().replace(/\s+/g, '-'),
+        dishes: {},
+        ratings: {},
+        reviews: {},
+        tags: {},
+        pictures: {},
       }
-      console.log("CREATING")
       createLocation
         .mutateAsync(newLocation)
         .then((createdLocation) => {
-          console.log({ msg: "GOT DATA", createdLocation })
-          setLocation(createdLocation)
-          console.log({ msg: "NAVIGATING", to: step.next })
-          navigate({ to: step.next })
+          setLocation(createdLocation.id)
+          goNext()
         })
         .catch((err) => {
           console.log({ msg: "failed", err })

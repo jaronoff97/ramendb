@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { TagCreateInputObjectSchema } from 'prisma/generated/schemas';
+import { TagCreateManyInputObjectSchema } from 'prisma/generated/schemas';
 import { prisma } from '@/lib/prisma'
 import { authMiddleware } from '@/lib/middlewares/require-auth';
 
@@ -17,9 +17,9 @@ export const Route = createFileRoute('/api/tags/')({
           middleware: [authMiddleware],
           handler: async ({ request }) => {
             const body = await request.json()
-            const data = TagCreateInputObjectSchema.parse(body)
-            const tag = await prisma.tag.create({ data })
-            return Response.json(tag)
+            const data = TagCreateManyInputObjectSchema.parse(body)
+            const tags = await prisma.tag.createMany({ data })
+            return Response.json(tags)
           }
         },
       })

@@ -1,20 +1,25 @@
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { useForm } from '@tanstack/react-form'
-import { fullReviewAtom, locationAtom, ratingAtom, userAtom } from '@/data/atoms/review-wizard-atoms'
+import { useWizard } from './useWizard';
+import type { RatingInput } from '@/lib/mutations/useCreateRating';
+import { locationIdAtom, ratingIdAtom, reviewIdAtom, userAtom } from '@/data/atoms/review-wizard-atoms'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useCreateRating } from '@/lib/mutations/useCreateRating'
 
 export function RatingStepForm() {
-  const setRating = useSetAtom(ratingAtom)
-  const [readLocation] = useAtom(locationAtom)
+  const setRating = useSetAtom(ratingIdAtom)
+  const [locationId] = useAtom(locationIdAtom)
+  const [reviewId] = useAtom(reviewIdAtom)
   const [user] = useAtom(userAtom)
-  const fullReview = useAtomValue(fullReviewAtom)
+  const createRating = useCreateRating()
+  const { goNext } = useWizard()
 
   const form = useForm({
     defaultValues: { value: 5 },
     onSubmit: ({ value }) => {
-      if (!user || !readLocation) return;
-      setRating({
+      if (!user || !locationId || !reviewId) return;
+      const newRating: RatingInput = {
         user: {
           connectOrCreate: {
             where: {
@@ -28,13 +33,31 @@ export function RatingStepForm() {
           }
         },
         value: value.value,
+        tags: {},
+        ratingPictures: {},
+        reviews: {
+          connect: {
+            id: reviewId
+          }
+        },
         location: {
           connect: {
-            id: readLocation.id
+            id: locationId
           }
-        }
-      })
-      console.log('Submitting full review:', fullReview)
+        },
+      }
+
+      createRating
+        .mutateAsync(newRating)
+        .then((createdRating) => {
+          console.log({ msg: "GOT DATA", createdRating })
+          setRating(createdRating.id)
+          goNext()
+        })
+        .catch((err) => {
+          console.log({ msg: "failed", err })
+        })
+
     },
   })
 

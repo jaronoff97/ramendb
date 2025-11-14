@@ -1,31 +1,39 @@
 import { useAtom, useSetAtom } from 'jotai'
 import { useForm } from '@tanstack/react-form'
-import { useNavigate } from '@tanstack/react-router'
 import { ReviewCreateInputObjectSchema } from 'prisma/generated/schemas'
-import { REVIEW_STEPS, getStepNav } from './steps'
-import { locationAtom, reviewAtom, userAtom } from '@/data/atoms/review-wizard-atoms'
+import { useWizard } from './useWizard'
+import type { ReviewInput } from '@/lib/mutations/useCreateReview';
+// import type { TagInput } from '@/lib/mutations/useCreateTags';
+import { locationIdAtom, reviewIdAtom, userAtom } from '@/data/atoms/review-wizard-atoms'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
+import { useCreateReview } from '@/lib/mutations/useCreateReview'
+// import { useCreateTags } from '@/lib/mutations/useCreateTags'
 
 export function ReviewStepForm() {
-  const setReview = useSetAtom(reviewAtom)
-  const navigate = useNavigate()
-  const [readLocation] = useAtom(locationAtom)
+  const setReview = useSetAtom(reviewIdAtom)
+  const [locationId] = useAtom(locationIdAtom)
   const [user] = useAtom(userAtom)
-  const step = getStepNav(REVIEW_STEPS.review)
+  const createReview = useCreateReview()
+  const { goNext } = useWizard()
+  // const createTags = useCreateTags()
+
   const form = useForm({
     defaultValues: { title: '', text: '', tagsInput: '', tags: [] },
     validators: {
       onDynamic: () => ReviewCreateInputObjectSchema,
     },
     onSubmit: ({ value }) => {
-      if (readLocation == null || user == null) {
+      if (locationId == null || user == null) {
         return;
       }
-      const tags = value.tagsInput.split(',').map((t) => t.trim()).filter(Boolean)
-      console.log({ msg: "TODO: CREATE TAGS", tags })
-      setReview({
+
+      // const tags: Array<TagInput> = value.tagsInput.split(',').map((t) => t.trim()).filter(Boolean).map((tag) => ({ name: tag }))
+      // if (tags.length > 0) {
+      //   createTags.mutate(tags)
+      // }
+      const newReview: ReviewInput = {
         user: {
           connectOrCreate: {
             where: {
@@ -38,13 +46,27 @@ export function ReviewStepForm() {
             }
           }
         },
-        title: value.title, text: value.text, location: {
+        title: value.title,
+        text: value.text,
+        tags: {},
+        pictures: {},
+        location: {
           connect: {
-            id: readLocation.id
+            id: locationId
           }
         }
-      })
-      navigate({ to: step.next })
+      }
+
+      createReview
+        .mutateAsync(newReview)
+        .then((createdReview) => {
+          console.log({ msg: "GOT DATA", createdReview })
+          setReview(createdReview.id)
+          goNext()
+        })
+        .catch((err) => {
+          console.log({ msg: "failed", err })
+        })
     },
   })
 

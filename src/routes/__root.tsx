@@ -57,6 +57,8 @@ export const Route = createRootRouteWithContext<RamenDBRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const { user, url } = Route.useLoaderData();
+
   return (
     <html lang="en">
       <head>
@@ -64,7 +66,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <WorkOSProvider>
-          <Header />
+          <Header user={user} signInUrl={url} />
           {children}
           <TanStackDevtools
             config={{
