@@ -13,8 +13,16 @@ const columns: (deleteReview: DeleteReview) => Array<ColumnDef<ReviewPureType>> 
     header: 'Title',
   },
   {
+    accessorKey: 'user.name',
+    header: 'User',
+  },
+  {
     accessorKey: 'rating.value',
     header: 'Rating',
+  },
+  {
+    accessorKey: 'location.name',
+    header: 'Location',
   },
   {
     id: 'actions',
