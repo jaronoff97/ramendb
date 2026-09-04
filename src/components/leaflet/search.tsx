@@ -14,9 +14,10 @@ import { useDebounce } from "@/hooks/useDebounce";
 
 interface Props {
   center: { lat: number; lon: number };
+  onSelectPlace?: (place: any) => void // callback for selected place
 }
 
-export function FloatingSearchPanel({ center: initialCenter }: Props) {
+export function FloatingSearchPanel({ center: initialCenter, onSelectPlace }: Props) {
   const map = useMap();
   const [zoom, setZoom] = useState<number | undefined>(undefined);
   const [center, setCenter] = useState<{ lat: number; lon: number }>(initialCenter);
@@ -92,13 +93,13 @@ export function FloatingSearchPanel({ center: initialCenter }: Props) {
                 className="w-full justify-start text-left"
                 onClick={() => {
                   map.setView([place.lat, place.lon], 17);
-                  alert(`Showing you ${place.name ?? "this location"}`);
+                  onSelectPlace?.(place);
                 }}
               >
                 <div>
-                  <div className="font-medium">{place.name ?? "Unnamed"}</div>
+                  <div className="font-medium">{place.name}</div>
                   <div className="text-xs text-muted-foreground">
-                    {place.amenity}
+                    {place.type}
                   </div>
                 </div>
               </Button>

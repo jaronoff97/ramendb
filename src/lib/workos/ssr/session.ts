@@ -91,10 +91,23 @@ export async function getSessionFromCookie() {
   }
 }
 
+export function sessionCookieOptions() {
+  return {
+    path: '/' as const,
+    httpOnly: true,
+    // A plain-http redirectUri means local development, where Secure would
+    // stop the browser from ever storing the cookie.
+    secure: getConfig('redirectUri').startsWith('https:'),
+    sameSite: 'lax' as const,
+    maxAge: getConfig('cookieMaxAge'),
+    domain: getConfig('cookieDomain'),
+  };
+}
+
 export async function saveSession(sessionOrResponse: Session | AuthenticationResponse): Promise<void> {
   const cookieName = getConfig('cookieName') || 'wos-session';
   const encryptedSession = await encryptSession(sessionOrResponse);
-  setCookie(cookieName, encryptedSession);
+  setCookie(cookieName, encryptedSession, sessionCookieOptions());
 }
 
 // JWKS call only happens once and the result is cached. The lazy function ensures that

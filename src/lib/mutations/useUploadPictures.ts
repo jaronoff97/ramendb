@@ -1,7 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
 import { apiFetch } from '../api';
+import type { z } from 'zod'
+import type { reviewPictureSchema } from '@/lib/types'
 
-type PictureInput = { url: string; caption?: string; reviewId?: string }
+type PictureInput = z.infer<typeof reviewPictureSchema>
 
 export function useUploadPictures() {
   return useMutation({

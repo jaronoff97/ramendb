@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import { deleteCookie } from '@tanstack/react-start/server';
 import { getConfig } from './ssr/config';
-import { terminateSession, withAuth } from './ssr/session';
+import { sessionCookieOptions, terminateSession, withAuth } from './ssr/session';
 import { getWorkOS } from './ssr/workos';
 import type { GetAuthURLOptions, NoUserInfo, UserInfo } from './ssr/interfaces';
 
@@ -34,8 +34,11 @@ export const getSignUpUrl = createServerFn({ method: 'GET' })
 export const signOut = createServerFn({ method: 'POST' })
   .inputValidator((data?: string) => data)
   .handler(async ({ data: returnTo }) => {
-    const cookieName = getConfig('cookieName') || 'wos_session';
-    deleteCookie(cookieName);
+    // The name must match `saveSession`, and so must path and domain, or the
+    // browser keeps the original cookie.
+    const cookieName = getConfig('cookieName') || 'wos-session';
+    const { path, domain } = sessionCookieOptions();
+    deleteCookie(cookieName, { path, domain });
     await terminateSession({ returnTo });
   });
 

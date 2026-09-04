@@ -1,13 +1,64 @@
-import { MapContainer, TileLayer } from 'react-leaflet'
-import type { MapOptions } from 'leaflet'
-import type { FC, ReactNode } from 'react'
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import { useNavigate } from '@tanstack/react-router'
+import { useSetAtom } from 'jotai';
+import type { ReactNode } from 'react'
+import type { LatLngTuple, MapOptions } from 'leaflet'
+import type { LocationInput } from '@/lib/mutations/useCreateLocation';
+import type { OSMPlace } from '@/hooks/useOverpass';
+import { useCreateLocation } from '@/lib/mutations/useCreateLocation'
+import { locationIdAtom } from '@/data/atoms/review-wizard-atoms';
 
-const LeafletMap: FC<
-  {
-    children: ReactNode
-    zoom: number
-  } & MapOptions
-> = ({ children, ...options }) => {
+
+// Marker type
+export interface MapMarker {
+  id: string | number
+  position: LatLngTuple
+  label?: string
+  data?: OSMPlace
+}
+
+interface LeafletMapProps {
+  children?: ReactNode
+  zoom: number
+  center: LatLngTuple
+  markers?: Array<MapMarker>
+  selectedMarker?: MapMarker | null
+}
+
+export default function LeafletMap({ children, markers = [], selectedMarker = null, ...options }: LeafletMapProps & MapOptions) {
+  const navigate = useNavigate();
+  const createLocation = useCreateLocation();
+  const setLocation = useSetAtom(locationIdAtom)
+
+  const handleStartReview = (marker: MapMarker) => {
+    if (!marker.data) return;
+    console.log({ marker })
+    const newLocation: LocationInput = {
+      id: `osm:${marker.data.id}`,
+      name: marker.data.name,
+      city: marker.data.city,
+      country: marker.data.country,
+      type: marker.data.type || 'restaurant',
+      slug: marker.data.name.toLowerCase().replace(/\s+/g, '-'),
+      latitude: marker.position[0],
+      longitude: marker.position[1],
+      dishes: {},
+      ratings: {},
+      reviews: {},
+      tags: {},
+      pictures: {},
+    }
+    createLocation
+      .mutateAsync(newLocation)
+      .then((createdLocation) => {
+        setLocation(createdLocation.id)
+        navigate({ to: `/reviews/new/review` });
+      })
+      .catch((err) => {
+        console.log({ msg: "failed", err })
+      })
+  };
+
   return (
     <MapContainer
       className="h-screen w-full relative"
@@ -18,9 +69,31 @@ const LeafletMap: FC<
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
       />
+
+      {/* Regular markers */}
+      {markers.map((m) => (
+        <Marker key={m.id} position={m.position}>
+          {m.label && <Popup>{m.label}</Popup>}
+        </Marker>
+      ))}
+
+      {/* Selected marker */}
+      {selectedMarker && (
+        <Marker position={selectedMarker.position}>
+          <Popup>
+            {selectedMarker.label}
+            <br />
+            <button
+              className="bg-blue-500 text-white px-2 py-1 rounded mt-2"
+              onClick={() => handleStartReview(selectedMarker)}
+            >
+              Start Review
+            </button>
+          </Popup>
+        </Marker>
+      )}
+
       {children}
     </MapContainer>
   )
 }
-
-export default LeafletMap

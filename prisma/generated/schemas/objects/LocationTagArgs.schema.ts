@@ -1,5 +1,4 @@
 import * as z from 'zod';
-import type { Prisma } from '@prisma/client';
 import { LocationTagSelectObjectSchema as LocationTagSelectObjectSchema } from './LocationTagSelect.schema';
 import { LocationTagIncludeObjectSchema as LocationTagIncludeObjectSchema } from './LocationTagInclude.schema'
 

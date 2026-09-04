@@ -1,5 +1,4 @@
 import * as z from 'zod';
-import type { Prisma } from '@prisma/client';
 import { RatingSelectObjectSchema as RatingSelectObjectSchema } from './RatingSelect.schema';
 import { RatingIncludeObjectSchema as RatingIncludeObjectSchema } from './RatingInclude.schema'
 

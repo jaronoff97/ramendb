@@ -11,3 +11,7 @@ count.txt
 .output
 .vinxi
 todos.json
+.task
+
+# hermit stores per-environment package caches here
+.hermit

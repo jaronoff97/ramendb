@@ -14,7 +14,7 @@ export const Route = createFileRoute('/api/dishes/$id')({
             })
 
             if (!dish) {
-              return new Response('Location not found', { status: 404 })
+              return new Response('Dish not found', { status: 404 })
             }
 
             return Response.json(dish)

@@ -14,7 +14,7 @@ export const Route = createFileRoute('/api/location-pictures/$id')({
             })
 
             if (!locationPicture) {
-              return new Response('Location not found', { status: 404 })
+              return new Response('LocationPicture not found', { status: 404 })
             }
 
             return Response.json(locationPicture)

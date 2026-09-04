@@ -1,5 +1,4 @@
 import * as z from 'zod';
-import type { Prisma } from '@prisma/client';
 import { LocationPictureSelectObjectSchema as LocationPictureSelectObjectSchema } from './LocationPictureSelect.schema';
 import { LocationPictureIncludeObjectSchema as LocationPictureIncludeObjectSchema } from './LocationPictureInclude.schema'
 

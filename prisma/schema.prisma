@@ -119,11 +119,14 @@ model Review {
   tags     ReviewTag[]
 }
 
+// Join rows and pictures belong to their parent, so they cascade. Review,
+// Rating and Dish keep the default Restrict against Location and User: a
+// location with reviews on it must not disappear by accident.
 model LocationTag {
   locationId String
   tagId      String
-  location   Location @relation(fields: [locationId], references: [id])
-  tag        Tag      @relation(fields: [tagId], references: [id])
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([locationId, tagId])
 }
@@ -131,8 +134,8 @@ model LocationTag {
 model DishTag {
   dishId String
   tagId  String
-  dish   Dish   @relation(fields: [dishId], references: [id])
-  tag    Tag    @relation(fields: [tagId], references: [id])
+  dish   Dish   @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([dishId, tagId])
 }
@@ -140,8 +143,8 @@ model DishTag {
 model RatingTag {
   ratingId String
   tagId    String
-  rating   Rating @relation(fields: [ratingId], references: [id])
-  tag      Tag    @relation(fields: [tagId], references: [id])
+  rating   Rating @relation(fields: [ratingId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([ratingId, tagId])
 }
@@ -149,8 +152,8 @@ model RatingTag {
 model ReviewTag {
   reviewId String
   tagId    String
-  review   Review @relation(fields: [reviewId], references: [id])
-  tag      Tag    @relation(fields: [tagId], references: [id])
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([reviewId, tagId])
 }
@@ -162,7 +165,7 @@ model LocationPicture {
   caption    String?
   createdAt  DateTime @default(now())
 
-  location Location @relation(fields: [locationId], references: [id])
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
 }
 
 model RatingPicture {
@@ -173,7 +176,7 @@ model RatingPicture {
   caption   String?
   createdAt DateTime @default(now())
 
-  rating Rating @relation(fields: [ratingId], references: [id])
+  rating Rating @relation(fields: [ratingId], references: [id], onDelete: Cascade)
 }
 
 model ReviewPicture {
@@ -183,5 +186,5 @@ model ReviewPicture {
   caption   String?
   createdAt DateTime @default(now())
 
-  review Review @relation(fields: [reviewId], references: [id])
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }

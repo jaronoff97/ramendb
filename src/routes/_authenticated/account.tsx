@@ -5,15 +5,15 @@ import SignInButton from '@/components/workos/signinbutton';
 export const Route = createFileRoute('/_authenticated/account')({
   component: AccountComponent,
   loader: async ({ context }) => {
-    const { user, accessToken } = context;
+    const { user } = context;
     const signInUrl = await getSignInUrl();
 
-    return { user, accessToken, signInUrl };
+    return { user, signInUrl };
   },
 })
 
 function AccountComponent() {
-  const { user, accessToken, signInUrl } = Route.useLoaderData();
+  const { user, signInUrl } = Route.useLoaderData();
 
   if (user) {
     return (
@@ -66,15 +66,6 @@ function AccountComponent() {
                 </label>
                 <p className="text-gray-300 text-sm font-mono break-all">
                   {user.id || 'N/A'}
-                </p>
-              </div>
-
-              <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30">
-                <label className="text-gray-400 text-sm font-medium block mb-1">
-                  Access Token
-                </label>
-                <p className="text-gray-300 text-sm font-mono break-all">
-                  {accessToken || 'N/A'}
                 </p>
               </div>
             </div>

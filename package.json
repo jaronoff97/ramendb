@@ -4,12 +4,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "vite build",
+    "generate": "prisma generate && node scripts/fix-generated-imports.mjs",
+    "postinstall": "node scripts/fix-generated-imports.mjs",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build",
     "serve": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier",
-    "check": "prettier --write . && eslint --fix"
+    "check": "prettier --write . && eslint --fix",
+    "start": "node server.js"
   },
   "dependencies": {
     "@faker-js/faker": "^10.0.0",
@@ -41,12 +45,14 @@
     "@workos-inc/node": "^7.72.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "decimal.js": "^10.6.0",
     "jotai": "^2.15.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.544.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-leaflet": "^5.0.0-rc.2",
+    "srvx": "^0.8.16",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.0.6",
     "tw-animate-css": "^1.3.6",

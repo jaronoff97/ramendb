@@ -3,6 +3,9 @@ import { LocationUpdateInputObjectSchema } from 'prisma/generated/schemas'
 import { prisma } from '@/lib/prisma'
 import { authMiddleware } from '@/lib/middlewares/require-auth'
 
+// ponytail: locations are shared catalog data with no owner column, so any
+// signed-in user may edit one. Add `Location.createdById` and an owner check
+// here if edit wars or vandalism ever show up.
 export const Route = createFileRoute('/api/locations/$id')({
   server: {
     handlers: ({ createHandlers }) =>
@@ -25,7 +28,6 @@ export const Route = createFileRoute('/api/locations/$id')({
           middleware: [authMiddleware],
           handler: async ({ request, params }) => {
             const body = await request.json()
-            // LocationCreateInputObjectSchema
             const data = LocationUpdateInputObjectSchema.safeParse(body)
             if (!data.success) {
               return Response.json(data.error, { status: 400 })
@@ -33,7 +35,7 @@ export const Route = createFileRoute('/api/locations/$id')({
 
             const updated = await prisma.location.update({
               where: { id: params.id },
-              data
+              data: data.data
             })
 
             return Response.json(updated)

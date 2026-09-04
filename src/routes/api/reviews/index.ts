@@ -24,13 +24,16 @@ export const Route = createFileRoute('/api/reviews/')({
         },
         POST: {
           middleware: [authMiddleware],
-          handler: async ({ request }) => {
+          handler: async ({ request, context }) => {
             const body = await request.json()
             const data = ReviewCreateInputObjectSchema.safeParse(body)
             if (!data.success) {
               return Response.json(data.error, { status: 400 })
             }
-            const review = await prisma.review.create({ data: data.data })
+            // The author comes from the verified token. A `user` in the body is ignored.
+            const review = await prisma.review.create({
+              data: { ...data.data, user: { connect: { id: context.userId } } },
+            })
             return Response.json(review)
           }
         },

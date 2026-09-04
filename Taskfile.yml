@@ -1,0 +1,119 @@
+version: '3'
+
+vars:
+  # The compose database. Every task points at this, so nothing depends on a
+  # Postgres you installed by hand.
+  DB_URL: postgresql://ramendb:ramendb@localhost:5433/ramendb
+  COMPOSE: docker compose
+
+env:
+  DATABASE_URL: '{{.DB_URL}}'
+
+dotenv: ['.env.local']
+
+tasks:
+  default:
+    desc: List the tasks
+    cmds: [task --list]
+    silent: true
+
+  install:
+    desc: Install node modules
+    sources: [package.json, package-lock.json]
+    generates: [node_modules/.package-lock.json]
+    cmds: [npm ci]
+
+  generate:
+    desc: Generate the prisma client and the zod schemas
+    deps: [install]
+    sources: [prisma/schema.prisma, prisma/zod-generator.config.json]
+    cmds: [npm run generate]
+
+  db:up:
+    desc: Start Postgres and wait for it
+    cmds: ['{{.COMPOSE}} up -d --wait db']
+
+  db:down:
+    desc: Stop Postgres and keep the data
+    cmds: ['{{.COMPOSE}} stop db']
+
+  db:reset:
+    desc: Delete the database volume and start over
+    prompt: This deletes every row in the local database. Continue?
+    cmds:
+      - '{{.COMPOSE}} down --volumes'
+      - task: migrate
+
+  db:psql:
+    desc: Open a psql shell on the local database
+    interactive: true
+    deps: [db:up]
+    cmds: ['{{.COMPOSE}} exec db psql -U ramendb -d ramendb']
+
+  migrate:
+    desc: Apply the migrations, and write a new one if the schema moved
+    deps: [db:up, generate]
+    cmds: [npx prisma migrate dev]
+
+  migrate:deploy:
+    desc: Apply the existing migrations without writing one
+    deps: [db:up]
+    cmds: [npx prisma migrate deploy]
+
+  dev:
+    desc: Run the app on this machine against the compose database
+    deps: [db:up, generate]
+    cmds:
+      - npx prisma migrate deploy
+      - npm run dev
+
+  docker:dev:
+    desc: Run the app inside compose with hot reload on http://localhost:3000
+    cmds: ['{{.COMPOSE}} --profile docker-dev up --build {{.CLI_ARGS}}']
+
+  docker:up:
+    desc: Build the production image and run the whole stack
+    cmds: ['{{.COMPOSE}} --profile app up --build {{.CLI_ARGS}}']
+
+  docker:build:
+    desc: Build the production image only
+    cmds: ['{{.COMPOSE}} --profile app build app']
+
+  docker:down:
+    desc: Stop every service and keep the data
+    cmds: ['{{.COMPOSE}} --profile app --profile docker-dev down']
+
+  build:
+    desc: Typecheck and build for production
+    deps: [generate]
+    cmds: [npm run build]
+
+  typecheck:
+    deps: [generate]
+    cmds: [npm run typecheck]
+
+  test:
+    deps: [generate]
+    cmds: [npm test]
+
+  lint:
+    deps: [install]
+    cmds: [npx eslint]
+
+  fix:
+    desc: Format and fix what the linter can fix on its own
+    deps: [install]
+    cmds: [npm run check]
+
+  check:
+    desc: What CI should run
+    cmds:
+      - task: typecheck
+      - task: lint
+      - task: test
+
+  clean:
+    desc: Remove build output and containers
+    cmds:
+      - rm -rf dist .tanstack node_modules/.vite
+      - '{{.COMPOSE}} --profile app --profile docker-dev down --volumes --remove-orphans'

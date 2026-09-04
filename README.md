@@ -1,6 +1,51 @@
-Welcome to your new TanStack app! 
+# RamenDB
 
-# Getting Started
+## Getting started
+
+The toolchain lives in [Hermit](https://cashapp.github.io/hermit/), so you need
+nothing on your machine except Docker and git.
+
+```bash
+source bin/activate-hermit   # puts the pinned node and task on your PATH
+cp .env.example .env.local   # then fill in your WorkOS values
+task dev                     # starts Postgres, migrates, and serves on :3000
+```
+
+`task` with no arguments lists every task. The ones you need most:
+
+| Task | What it does |
+| --- | --- |
+| `task dev` | Runs Postgres in Docker and Vite on your machine. Fastest edit loop. |
+| `task docker:dev` | Runs everything in Docker, hot reload included, on port 3000. |
+| `task docker:up` | Builds the production image and runs the whole stack. |
+| `task migrate` | Applies the migrations, and writes a new one if the schema moved. |
+| `task db:psql` | Opens a psql shell on the local database. |
+| `task db:reset` | Throws the local database away and starts over. |
+| `task check` | Typecheck, lint, and test. Run this before you push. |
+
+## The database
+
+`compose.yaml` runs Postgres on host port **5433**, not 5432, so it never
+fights a Postgres you already installed. `Taskfile.yml` points `DATABASE_URL`
+at it and overrides whatever `.env.local` says, so every task talks to the same
+database.
+
+## Hot reload in Docker
+
+`task docker:dev` mounts your working tree into the container and runs Vite
+there. Vite pushes HMR updates over port 3000, so the browser refreshes as you
+edit. A bind mount on macOS and Windows delivers no file events, so the
+container sets `VITE_USE_POLLING=1` and the watcher polls instead. On Linux you
+can drop that variable and get native events.
+
+`node_modules` stays on a named volume, so the linux binaries in the image are
+not shadowed by the darwin build on your host.
+
+---
+
+# TanStack template notes
+
+## Getting Started
 
 To run this application:
 

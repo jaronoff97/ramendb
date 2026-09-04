@@ -1,0 +1,11 @@
+node_modules
+dist
+.git
+.tanstack
+.env*
+# hermit's symlinks point at a host cache that does not exist in the image
+bin
+.vscode
+.DS_Store
+compose.yaml
+Taskfile.yml

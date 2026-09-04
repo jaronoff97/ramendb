@@ -1,5 +1,4 @@
 import * as z from 'zod';
-import type { Prisma } from '@prisma/client';
 import { ReviewPictureSelectObjectSchema as ReviewPictureSelectObjectSchema } from './ReviewPictureSelect.schema';
 import { ReviewPictureIncludeObjectSchema as ReviewPictureIncludeObjectSchema } from './ReviewPictureInclude.schema'
 

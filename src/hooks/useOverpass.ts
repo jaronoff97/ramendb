@@ -1,13 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 
-export interface OSMPlace {
-  id: number;
-  name: string | null;
-  lat: number;
-  lon: number;
-  amenity: string;
-}
-
 export function bboxFromCenter(
   lat: number,
   lon: number,
@@ -26,22 +18,49 @@ export function bboxFromCenter(
   return `${lat1},${lon1},${lat2},${lon2}`;
 }
 
+export interface OSMPlace {
+  id: number;
+  lat: number;
+  lon: number;
+  name: string;
+  type: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  website: string | null;
+  hours: string | null;
+}
+
+/**
+ * Turns a search term into a literal for an Overpass QL regex filter.
+ *
+ * The term lands inside a double-quoted regex, so a bare `"` or `\` ends the
+ * literal and rewrites the query. Regex metacharacters also let a caller send
+ * a pattern that runs slowly against a shared public API. We escape both.
+ */
+export function escapeOverpassRegex(name: string) {
+  // One pass, so an escape we add is never escaped again.
+  return name.replace(/[\\"^$.*+?()[\]{}|/-]/g, '\\$&');
+}
 
 async function fetchOSMPlaces(
   type: "restaurant" | "bar",
   name: string,
   startLat: number,
   startLon: number,
-  radiusMeters: number) {
+  radiusMeters: number
+) {
   const bbox = bboxFromCenter(startLat, startLon, radiusMeters);
+  const safeName = escapeOverpassRegex(name);
 
   const query = `
     [out:json][timeout:15];
     (
-      node["amenity"="${type}"]["name"~"${name}", i](${bbox});
-      way["amenity"="${type}"]["name"~"${name}", i](${bbox});
+      node["amenity"="${type}"]["name"~"${safeName}", i](${bbox});
+      way["amenity"="${type}"]["name"~"${safeName}", i](${bbox});
     );
-    out center;
+    out center tags;
   `;
 
   const res = await fetch("https://overpass-api.de/api/interpreter", {
@@ -55,16 +74,26 @@ async function fetchOSMPlaces(
 
   return (data.elements ?? [])
     .map((el: any): OSMPlace | null => {
-      const lat = el.lat ?? el.center?.lat;
-      const lon = el.lon ?? el.center?.lon;
+      const lat = el.lat ?? el.center?.lat ?? startLat;
+      const lon = el.lon ?? el.center?.lon ?? startLon;
       if (!lat || !lon) return null;
+
+      const tags = el.tags ?? {};
 
       return {
         id: el.id,
-        name: el.tags?.name ?? null,
-        lat,
-        lon,
-        amenity: el.tags?.amenity,
+        name: tags.name,
+        type: tags.amenity,
+        address: tags["addr:housenumber"] && tags["addr:street"]
+          ? `${tags["addr:housenumber"]} ${tags["addr:street"]}`
+          : null,
+        city: tags["addr:city"] ?? null,
+        state: tags["addr:state"] ?? null,
+        country: tags["addr:country"] ?? null,
+        lat: lat,
+        lon: lon,
+        website: tags.website ?? tags.url ?? null,
+        hours: tags.opening_hours ?? null,
       };
     })
     .filter(Boolean) as Array<OSMPlace>;

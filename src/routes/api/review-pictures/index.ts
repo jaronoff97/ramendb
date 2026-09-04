@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { ReviewPictureCreateInputObjectSchema } from 'prisma/generated/schemas';
 import { prisma } from '@/lib/prisma'
 import { authMiddleware } from '@/lib/middlewares/require-auth';
+import { reviewPicturesPayloadSchema } from '@/lib/types';
 
 export const Route = createFileRoute('/api/review-pictures/')({
   server: {
@@ -15,14 +15,26 @@ export const Route = createFileRoute('/api/review-pictures/')({
         },
         POST: {
           middleware: [authMiddleware],
-          handler: async ({ request }) => {
+          handler: async ({ request, context }) => {
             const body = await request.json()
-            const data = ReviewPictureCreateInputObjectSchema.safeParse(body)
+            const data = reviewPicturesPayloadSchema.safeParse(body)
             if (!data.success) {
               return Response.json(data.error, { status: 400 })
             }
-            const reviewPicture = await prisma.reviewPicture.create({ data: data.data })
-            return Response.json(reviewPicture)
+
+            // Every picture must attach to a review the caller owns.
+            const reviewIds = [...new Set(data.data.pictures.map((p) => p.reviewId))]
+            const owned = await prisma.review.count({
+              where: { id: { in: reviewIds }, userId: context.userId },
+            })
+            if (owned !== reviewIds.length) {
+              return new Response('Forbidden', { status: 403 })
+            }
+
+            const created = await prisma.reviewPicture.createManyAndReturn({
+              data: data.data.pictures,
+            })
+            return Response.json(created)
           }
         },
       })

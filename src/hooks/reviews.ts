@@ -53,7 +53,8 @@ export function useUpdateReview() {
     }) => {
       const parsed = ReviewUpdateInputObjectZodSchema.safeParse(input)
       if (!parsed.success) {
-        return new Error(parsed.error.message)
+        // A return here would look like a success to React Query.
+        throw new Error(parsed.error.message)
       }
       return apiFetch(`/api/reviews/${id}`, {
         method: 'PUT',

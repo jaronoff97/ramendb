@@ -37,3 +37,14 @@ export const reviewSchema = z.object({
   tagIds: z.array(z.string()).optional(),
   pictures: z.array(z.object({ url: z.url(), caption: z.string().optional() })).optional(),
 })
+
+export const reviewPictureSchema = z.object({
+  reviewId: z.cuid(),
+  url: z.url(),
+  caption: z.string().optional(),
+})
+
+// The upload hook posts a batch, so the route accepts one.
+export const reviewPicturesPayloadSchema = z.object({
+  pictures: z.array(reviewPictureSchema).min(1),
+})

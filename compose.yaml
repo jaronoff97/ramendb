@@ -1,0 +1,102 @@
+name: ramendb
+
+# Every service that talks to the database gets the same URL. The host name
+# `db` only resolves inside the compose network, so this never collides with a
+# Postgres you already run on your machine.
+x-db-url: &db-url
+  DATABASE_URL: postgresql://${POSTGRES_USER:-ramendb}:${POSTGRES_PASSWORD:-ramendb}@db:5432/${POSTGRES_DB:-ramendb}
+
+# Vite bakes these into the browser bundle, so they are build inputs, not
+# runtime settings. `task` passes them in from .env.local.
+x-vite-args: &vite-args
+  VITE_WORKOS_CLIENT_ID: ${VITE_WORKOS_CLIENT_ID:-}
+  VITE_WORKOS_API_HOSTNAME: ${VITE_WORKOS_API_HOSTNAME:-api.workos.com}
+  VITE_WORKOS_REDIRECT_URI: ${VITE_WORKOS_REDIRECT_URI:-http://localhost:3000/api/auth/callback}
+
+services:
+  # No profile, so `docker compose up -d db` is all `task dev` needs.
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ramendb}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ramendb}
+      POSTGRES_DB: ${POSTGRES_DB:-ramendb}
+    ports:
+      # 5433 on the host, because 5432 is usually already busy.
+      - '${POSTGRES_PORT:-5433}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-ramendb} -d ${POSTGRES_DB:-ramendb}']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 3s
+
+  # Runs once and exits. The `build` stage still has the prisma CLI, which the
+  # runtime image deletes.
+  migrate:
+    profiles: [app, docker-dev]
+    build:
+      context: .
+      target: build
+      args: *vite-args
+    command: ['npx', 'prisma', 'migrate', 'deploy']
+    environment: *db-url
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: 'no'
+
+  # The production image, exactly as it ships.
+  app:
+    profiles: [app]
+    build:
+      context: .
+      args: *vite-args
+    ports:
+      - '${APP_PORT:-3000}:8080'
+    environment:
+      <<: *db-url
+      NODE_ENV: production
+    env_file:
+      - path: .env.local
+        required: false
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  # The same image stopped at the `deps` stage, with your working tree mounted
+  # over it. Vite serves from the container and pushes HMR out over port 3000.
+  docker-dev:
+    profiles: [docker-dev]
+    build:
+      context: .
+      target: dev
+    ports:
+      - '3000:3000'
+    environment:
+      <<: *db-url
+      # Bind mounts on macOS and Windows do not deliver file events, so the
+      # watcher has to poll. On Linux you can drop this.
+      VITE_USE_POLLING: '1'
+    env_file:
+      - path: .env.local
+        required: false
+    volumes:
+      - .:/app
+      # Keeps the linux-built node_modules from the image. Docker seeds a named
+      # volume from the image on first use, so this starts full, not empty.
+      - docker_dev_node_modules:/app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:
+  docker_dev_node_modules:
