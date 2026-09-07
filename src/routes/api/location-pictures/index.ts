@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { LocationPictureCreateInputObjectSchema } from 'prisma/generated/schemas';
+import { createFileRoute } from '@tanstack/react-router'
+import { LocationPictureCreateInputObjectSchema } from 'prisma/generated/schemas'
 import { prisma } from '@/lib/prisma'
-import { authMiddleware } from '@/lib/middlewares/require-auth';
+import { authMiddleware } from '@/lib/middlewares/require-auth'
 
 export const Route = createFileRoute('/api/location-pictures/')({
   server: {
@@ -11,7 +11,7 @@ export const Route = createFileRoute('/api/location-pictures/')({
           handler: async () => {
             const locationPictures = await prisma.locationPicture.findMany()
             return Response.json(locationPictures)
-          }
+          },
         },
         POST: {
           middleware: [authMiddleware],
@@ -21,10 +21,12 @@ export const Route = createFileRoute('/api/location-pictures/')({
             if (!data.success) {
               return Response.json(data.error, { status: 400 })
             }
-            const locationPicture = await prisma.locationPicture.create({ data: data.data })
+            const locationPicture = await prisma.locationPicture.create({
+              data: data.data,
+            })
             return Response.json(locationPicture)
-          }
+          },
         },
-      })
-  }
+      }),
+  },
 })

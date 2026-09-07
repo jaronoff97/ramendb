@@ -1,6 +1,6 @@
-import { useNavigate } from "@tanstack/react-router"
-import { getStepNav, stepOrder, useCurrentStep } from "./steps"
-import type { REVIEW_STEP_ROUTE } from "./steps";
+import { useNavigate } from '@tanstack/react-router'
+import { getStepNav, stepOrder, useCurrentStep } from './steps'
+import type { REVIEW_STEP_ROUTE } from './steps'
 
 export function useWizard() {
   const currentStep = useCurrentStep()

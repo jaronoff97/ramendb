@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { RatingCreateInputObjectSchema } from 'prisma/generated/schemas';
+import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/lib/prisma'
-import { authMiddleware } from '@/lib/middlewares/require-auth';
+import { authMiddleware } from '@/lib/middlewares/require-auth'
+import { ratingCreateSchema } from '@/lib/types'
 
 export const Route = createFileRoute('/api/ratings/')({
   server: {
@@ -9,25 +9,46 @@ export const Route = createFileRoute('/api/ratings/')({
       createHandlers({
         GET: {
           handler: async () => {
-            const ratings = await prisma.rating.findMany({ include: { tags: { include: { tag: true } } } })
+            const ratings = await prisma.rating.findMany({
+              include: { tags: { include: { tag: true } } },
+            })
             return Response.json(ratings)
-          }
+          },
         },
         POST: {
           middleware: [authMiddleware],
           handler: async ({ request, context }) => {
             const body = await request.json()
-            const data = RatingCreateInputObjectSchema.safeParse(body)
+            const data = ratingCreateSchema.safeParse(body)
             if (!data.success) {
               return Response.json(data.error, { status: 400 })
             }
-            // The author comes from the verified token. A `user` in the body is ignored.
-            const rating = await prisma.rating.create({
-              data: { ...data.data, user: { connect: { id: context.userId } } },
+            const { reviewId, ...rating } = data.data
+
+            // One score per person per location, so a second submit updates the
+            // first rather than failing on the unique constraint.
+            const saved = await prisma.rating.upsert({
+              where: {
+                userId_locationId: {
+                  userId: context.userId,
+                  locationId: rating.locationId,
+                },
+              },
+              update: { value: rating.value },
+              create: { ...rating, userId: context.userId },
             })
-            return Response.json(rating)
-          }
+
+            // Link the review that this score belongs to, when there is one.
+            if (reviewId) {
+              await prisma.review.updateMany({
+                where: { id: reviewId, userId: context.userId },
+                data: { ratingId: saved.id },
+              })
+            }
+
+            return Response.json(saved)
+          },
         },
-      })
-  }
+      }),
+  },
 })

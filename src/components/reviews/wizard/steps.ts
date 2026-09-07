@@ -1,4 +1,4 @@
-import { useRouter } from "@tanstack/react-router"
+import { useRouter } from '@tanstack/react-router'
 
 export const stepOrder = [
   '/reviews/new',
@@ -9,7 +9,7 @@ export const stepOrder = [
   '/reviews/new/success',
 ] as const
 
-export type REVIEW_STEP_ROUTE = typeof stepOrder[number]
+export type REVIEW_STEP_ROUTE = (typeof stepOrder)[number]
 
 export const REVIEW_STEPS = {
   pick: stepOrder[0],
@@ -23,8 +23,10 @@ export const REVIEW_STEPS = {
 export function useCurrentStep(): REVIEW_STEP_ROUTE {
   const router = useRouter()
   const pathname = router.state.location.pathname
-  const match = [...stepOrder].reverse().find(step => pathname.startsWith(step))
-  return (match ?? REVIEW_STEPS.location)
+  const match = [...stepOrder]
+    .reverse()
+    .find((step) => pathname.startsWith(step))
+  return match ?? REVIEW_STEPS.location
 }
 
 export function getStepNav(currentStep: REVIEW_STEP_ROUTE) {

@@ -1,9 +1,9 @@
 // components/location/LocationCardHeader.tsx
 
-import { GlobeIcon } from "lucide-react"
-import type { LocationPureType } from "prisma/generated/schemas"
-import { Badge } from "@/components/ui/badge"
-import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { GlobeIcon } from 'lucide-react'
+import type { LocationPureType } from 'prisma/generated/schemas'
+import { Badge } from '@/components/ui/badge'
+import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface Props {
   location: LocationPureType

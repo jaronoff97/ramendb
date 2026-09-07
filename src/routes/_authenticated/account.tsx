@@ -1,19 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getSignInUrl } from '@/lib/workos/server-functions'
-import SignInButton from '@/components/workos/signinbutton';
+import SignInButton from '@/components/workos/signinbutton'
 
 export const Route = createFileRoute('/_authenticated/account')({
   component: AccountComponent,
-  loader: async ({ context }) => {
-    const { user } = context;
-    const signInUrl = await getSignInUrl();
-
-    return { user, signInUrl };
-  },
+  // `_authenticated` redirects anyone without a session, so `user` is always
+  // set here. This used to fetch a sign-in URL for a branch that never ran.
+  loader: ({ context }) => ({ user: context.user }),
 })
 
 function AccountComponent() {
-  const { user, signInUrl } = Route.useLoaderData();
+  const { user } = Route.useLoaderData()
 
   if (user) {
     return (
@@ -71,37 +67,12 @@ function AccountComponent() {
             </div>
 
             {/* Sign Out Button */}
-            <SignInButton user={user} url={signInUrl} large />
+            <SignInButton user={user} url="" large />
           </div>
         </div>
       </div>
     )
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      <section className="relative py-20 px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10"></div>
-        <div className="relative max-w-5xl mx-auto">
-          <div className="flex items-center justify-center gap-6 mb-6">
-            <img
-              src="/tanstack-circle-logo.png"
-              alt="TanStack Logo"
-              className="w-24 h-24 md:w-32 md:h-32"
-            />
-            <h1 className="text-6xl md:text-7xl font-black text-white [letter-spacing:-0.08em]">
-              <span className="text-gray-300">TANSTACK</span>{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                START
-              </span>
-            </h1>
-          </div>
-          <p className="text-gray-400 text-center mb-6">
-            Sign in to view your profile information
-          </p>
-          <SignInButton user={user} url={signInUrl} large />
-        </div>
-      </section>
-    </div>
-  )
+  return null
 }

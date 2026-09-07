@@ -1,14 +1,17 @@
 import { Link } from '@tanstack/react-router'
 
 import { useState } from 'react'
-import {
-  AppWindow, Home,
-  Menu, X
-} from 'lucide-react'
+import { AppWindow, Home, Menu, X } from 'lucide-react'
 import SignInButton from './workos/signinbutton.tsx'
 import type { User } from '@workos-inc/node'
 
-export default function Header({ user, signInUrl }: { user: User | null, signInUrl: string }) {
+export default function Header({
+  user,
+  signInUrl,
+}: {
+  user: User | null
+  signInUrl: string
+}) {
   const [isOpen, setIsOpen] = useState(false)
   // const [groupedExpanded, setGroupedExpanded] = useState<
   //   Record<string, boolean>
@@ -26,18 +29,15 @@ export default function Header({ user, signInUrl }: { user: User | null, signInU
         </button>
         <h1 className="ml-4 text-xl font-semibold">
           <Link to="/">
-            <img
-              src="/ramendb-logo.svg"
-              alt="RamenDB Logo"
-              className="h-10"
-            />
+            <img src="/ramendb-logo.svg" alt="RamenDB Logo" className="h-10" />
           </Link>
         </h1>
       </header>
 
       <aside
-        className={`fixed top-0 left-0 h-full w-80 bg-gray-900 text-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+        className={`fixed top-0 left-0 h-full w-80 bg-gray-900 text-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <h2 className="text-xl font-bold">Navigation</h2>

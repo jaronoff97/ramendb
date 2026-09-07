@@ -1,8 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router';
-import * as z from 'zod';
-import { TagCreateManyInputObjectSchema } from 'prisma/generated/schemas';
+import { createFileRoute } from '@tanstack/react-router'
+import * as z from 'zod'
+import { TagCreateManyInputObjectSchema } from 'prisma/generated/schemas'
 import { prisma } from '@/lib/prisma'
-import { authMiddleware } from '@/lib/middlewares/require-auth';
+import { authMiddleware } from '@/lib/middlewares/require-auth'
 
 // The client creates tags in batches, so the body is an array.
 const createTagsSchema = z.array(TagCreateManyInputObjectSchema).min(1)
@@ -15,7 +15,7 @@ export const Route = createFileRoute('/api/tags/')({
           handler: async () => {
             const tags = await prisma.tag.findMany()
             return Response.json(tags)
-          }
+          },
         },
         POST: {
           middleware: [authMiddleware],
@@ -31,8 +31,8 @@ export const Route = createFileRoute('/api/tags/')({
               skipDuplicates: true,
             })
             return Response.json(tags)
-          }
+          },
         },
-      })
-  }
+      }),
+  },
 })

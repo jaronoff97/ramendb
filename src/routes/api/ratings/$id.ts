@@ -5,7 +5,10 @@ import { authMiddleware } from '@/lib/middlewares/require-auth'
 import { ownerGate } from '@/lib/authz'
 
 async function denyUnlessOwner(id: string, userId: string) {
-  const rating = await prisma.rating.findUnique({ where: { id }, select: { userId: true } })
+  const rating = await prisma.rating.findUnique({
+    where: { id },
+    select: { userId: true },
+  })
   return ownerGate(rating, userId, 'Rating')
 }
 
@@ -24,7 +27,7 @@ export const Route = createFileRoute('/api/ratings/$id')({
             }
 
             return Response.json(rating)
-          }
+          },
         },
         PUT: {
           middleware: [authMiddleware],
@@ -43,11 +46,11 @@ export const Route = createFileRoute('/api/ratings/$id')({
 
             const updated = await prisma.rating.update({
               where: { id: params.id },
-              data: updateData
+              data: updateData,
             })
 
             return Response.json(updated)
-          }
+          },
         },
         DELETE: {
           middleware: [authMiddleware],
@@ -57,8 +60,8 @@ export const Route = createFileRoute('/api/ratings/$id')({
 
             await prisma.rating.delete({ where: { id: params.id } })
             return new Response(null, { status: 204 })
-          }
+          },
         },
-      })
-  }
+      }),
+  },
 })

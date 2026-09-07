@@ -1,77 +1,90 @@
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { useForm } from '@tanstack/react-form'
-import { useWizard } from './useWizard';
-import type { RatingInput } from '@/lib/mutations/useCreateRating';
-import { locationIdAtom, ratingIdAtom, reviewIdAtom, userAtom } from '@/data/atoms/review-wizard-atoms'
-import { Input } from '@/components/ui/input'
+import * as z from 'zod'
+import { useWizard } from './useWizard'
+import {
+  locationIdAtom,
+  ratingIdAtom,
+  reviewIdAtom,
+} from '@/data/atoms/review-wizard-atoms'
 import { Button } from '@/components/ui/button'
 import { useCreateRating } from '@/lib/mutations/useCreateRating'
 
+const formSchema = z.object({
+  value: z.number().int().min(1, 'Pick a score').max(5),
+})
+
+const STARS = [1, 2, 3, 4, 5]
+
 export function RatingStepForm() {
   const setRating = useSetAtom(ratingIdAtom)
-  const [locationId] = useAtom(locationIdAtom)
-  const [reviewId] = useAtom(reviewIdAtom)
-  const [user] = useAtom(userAtom)
+  const locationId = useAtomValue(locationIdAtom)
+  const reviewId = useAtomValue(reviewIdAtom)
   const createRating = useCreateRating()
   const { goNext } = useWizard()
 
   const form = useForm({
     defaultValues: { value: 5 },
-    onSubmit: ({ value }) => {
-      if (!user || !locationId || !reviewId) return;
-      const newRating: RatingInput = {
-        user: {
-          connectOrCreate: {
-            where: {
-              workosId: user.id
-            },
-            create: {
-              email: user.email,
-              name: `${user.firstName} ${user.lastName}`,
-              workosId: user.id
-            }
-          }
-        },
+    validators: { onChange: formSchema },
+    onSubmit: async ({ value }) => {
+      if (!locationId || !reviewId) return
+      const created = await createRating.mutateAsync({
+        locationId,
+        reviewId,
         value: value.value,
-        tags: {},
-        ratingPictures: {},
-        reviews: {
-          connect: {
-            id: reviewId
-          }
-        },
-        location: {
-          connect: {
-            id: locationId
-          }
-        },
-      }
-
-      createRating
-        .mutateAsync(newRating)
-        .then((createdRating) => {
-          setRating(createdRating.id)
-          goNext()
-        })
-        .catch((err) => {
-          console.log({ msg: "failed", err })
-        })
-
+      })
+      setRating(created.id)
+      goNext()
     },
   })
 
   return (
-    <form id="rating-form" onSubmit={(e) => { e.preventDefault(); form.handleSubmit() }} className="space-y-4">
+    <form
+      id="rating-form"
+      onSubmit={(e) => {
+        e.preventDefault()
+        void form.handleSubmit()
+      }}
+      className="space-y-4"
+    >
       <form.Field
         name="value"
         children={(field) => (
-          <div>
-            <label>Rating (1–5)</label>
-            <Input type="number" min="1" max="5" value={field.state.value} onChange={(e) => field.handleChange(Number(e.target.value))} />
+          <div className="space-y-1">
+            <span className="text-sm font-medium">Rating</span>
+            <div
+              className="flex gap-1"
+              role="radiogroup"
+              aria-label="Rating out of 5"
+            >
+              {STARS.map((star) => (
+                <Button
+                  key={star}
+                  type="button"
+                  size="sm"
+                  role="radio"
+                  aria-checked={field.state.value === star}
+                  aria-label={`${star} out of 5`}
+                  variant={field.state.value >= star ? 'default' : 'outline'}
+                  onClick={() => field.handleChange(star)}
+                >
+                  ★
+                </Button>
+              ))}
+            </div>
           </div>
         )}
       />
-      <Button type="submit">Submit Review</Button>
+
+      {createRating.isError && (
+        <p className="text-destructive text-sm">
+          Could not save the rating: {createRating.error.message}
+        </p>
+      )}
+
+      <Button type="submit" disabled={createRating.isPending}>
+        {createRating.isPending ? 'Saving…' : 'Submit Review'}
+      </Button>
     </form>
   )
 }

@@ -1,11 +1,9 @@
 import {
   flexRender,
   getCoreRowModel,
-  useReactTable
-} from "@tanstack/react-table"
-import type {
-  ColumnDef
-} from "@tanstack/react-table";
+  useReactTable,
+} from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 
 import {
   Table,
@@ -14,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/table'
 
 interface DataTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -30,10 +28,13 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     filterFns: {
-      "fuzzy": (row, columnId, filterValue) => {
-        const value = row.getValue(columnId);
-        return typeof value === "string" && value.toLowerCase().includes(filterValue.toLowerCase());
-      }
+      fuzzy: (row, columnId, filterValue) => {
+        const value = row.getValue(columnId)
+        return (
+          typeof value === 'string' &&
+          value.toLowerCase().includes(filterValue.toLowerCase())
+        )
+      },
     },
   })
 
@@ -49,9 +50,9 @@ export function DataTable<TData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
                 )
               })}
@@ -63,7 +64,7 @@ export function DataTable<TData, TValue>({
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() && "selected"}
+                data-state={row.getIsSelected() && 'selected'}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

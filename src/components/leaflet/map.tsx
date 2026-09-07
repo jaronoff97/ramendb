@@ -1,14 +1,14 @@
 import { MapContainer, Marker, Popup } from 'react-leaflet'
 import { useNavigate } from '@tanstack/react-router'
-import { useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai'
+import { VectorBasemap } from './VectorBasemap'
 import type { ReactNode } from 'react'
 import type { LatLngTuple, MapOptions } from 'leaflet'
-import type { LocationInput } from '@/lib/mutations/useCreateLocation';
-import type { OSMPlace } from '@/hooks/useOverpass';
-import { VectorBasemap } from './VectorBasemap';
+import type { OSMPlace } from '@/hooks/useOverpass'
+import type { LocationCreateBody } from '@/lib/types'
 import { useCreateLocation } from '@/lib/mutations/useCreateLocation'
-import { locationIdAtom } from '@/data/atoms/review-wizard-atoms';
-
+import { locationIdAtom } from '@/data/atoms/review-wizard-atoms'
+import { Button } from '@/components/ui/button'
 
 // Marker type
 export interface MapMarker {
@@ -24,41 +24,42 @@ interface LeafletMapProps {
   center: LatLngTuple
   markers?: Array<MapMarker>
   selectedMarker?: MapMarker | null
+  onSelectMarker?: (marker: MapMarker) => void
 }
 
-export default function LeafletMap({ children, markers = [], selectedMarker = null, ...options }: LeafletMapProps & MapOptions) {
-  const navigate = useNavigate();
-  const createLocation = useCreateLocation();
+export default function LeafletMap({
+  children,
+  markers = [],
+  selectedMarker = null,
+  onSelectMarker,
+  ...options
+}: LeafletMapProps & MapOptions) {
+  const navigate = useNavigate()
+  const createLocation = useCreateLocation()
   const setLocation = useSetAtom(locationIdAtom)
 
-  const handleStartReview = (marker: MapMarker) => {
-    if (!marker.data) return;
-    console.log({ marker })
-    const newLocation: LocationInput = {
-      id: `osm:${marker.data.id}`,
-      name: marker.data.name,
-      city: marker.data.city,
-      country: marker.data.country,
-      type: marker.data.type || 'restaurant',
-      slug: marker.data.name.toLowerCase().replace(/\s+/g, '-'),
+  const handleStartReview = async (marker: MapMarker) => {
+    const place = marker.data
+    if (!place) return
+
+    // The server derives the slug, so nothing here has to guess at one.
+    const newLocation: LocationCreateBody = {
+      name: place.name,
+      type: place.type || 'restaurant',
+      address: place.address,
+      city: place.city,
+      state: place.state,
+      country: place.country,
+      website: place.website,
+      hours: place.hours,
       latitude: marker.position[0],
       longitude: marker.position[1],
-      dishes: {},
-      ratings: {},
-      reviews: {},
-      tags: {},
-      pictures: {},
     }
-    createLocation
-      .mutateAsync(newLocation)
-      .then((createdLocation) => {
-        setLocation(createdLocation.id)
-        navigate({ to: `/reviews/new/review` });
-      })
-      .catch((err) => {
-        console.log({ msg: "failed", err })
-      })
-  };
+
+    const created = await createLocation.mutateAsync(newLocation)
+    setLocation(created.id)
+    await navigate({ to: '/reviews/new/review' })
+  }
 
   return (
     <MapContainer
@@ -68,9 +69,13 @@ export default function LeafletMap({ children, markers = [], selectedMarker = nu
     >
       <VectorBasemap />
 
-      {/* Regular markers */}
+      {/* Everything the search found */}
       {markers.map((m) => (
-        <Marker key={m.id} position={m.position}>
+        <Marker
+          key={m.id}
+          position={m.position}
+          eventHandlers={{ click: () => onSelectMarker?.(m) }}
+        >
           {m.label && <Popup>{m.label}</Popup>}
         </Marker>
       ))}
@@ -79,14 +84,24 @@ export default function LeafletMap({ children, markers = [], selectedMarker = nu
       {selectedMarker && (
         <Marker position={selectedMarker.position}>
           <Popup>
-            {selectedMarker.label}
-            <br />
-            <button
-              className="bg-blue-500 text-white px-2 py-1 rounded mt-2"
-              onClick={() => handleStartReview(selectedMarker)}
-            >
-              Start Review
-            </button>
+            <div className="space-y-2">
+              <div className="font-medium">{selectedMarker.label}</div>
+
+              {createLocation.isError && (
+                <p className="text-destructive text-xs">
+                  Could not start the review: {createLocation.error.message}
+                </p>
+              )}
+
+              <Button
+                type="button"
+                size="sm"
+                disabled={createLocation.isPending}
+                onClick={() => void handleStartReview(selectedMarker)}
+              >
+                {createLocation.isPending ? 'Starting…' : 'Start Review'}
+              </Button>
+            </div>
           </Popup>
         </Marker>
       )}

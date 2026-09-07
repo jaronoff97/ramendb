@@ -1,15 +1,12 @@
 import { useMutation } from '@tanstack/react-query'
 import { apiFetch } from '../api'
-import type { z } from 'zod'
-import type { RatingCreateInputObjectZodSchema, RatingResultSchema } from 'prisma/generated/schemas'
-
-export type RatingInput = z.infer<typeof RatingCreateInputObjectZodSchema>
-export type ReviewResult = z.infer<typeof RatingResultSchema>
+import type { RatingCreateBody } from '@/lib/types'
+import type { RatingPureType } from 'prisma/generated/schemas'
 
 export function useCreateRating() {
   return useMutation({
     mutationKey: ['createRating'],
-    mutationFn: (data: RatingInput): Promise<ReviewResult> =>
+    mutationFn: (data: RatingCreateBody): Promise<RatingPureType> =>
       apiFetch('/api/ratings', {
         method: 'POST',
         body: JSON.stringify(data),

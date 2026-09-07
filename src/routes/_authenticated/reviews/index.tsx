@@ -8,7 +8,15 @@ export const Route = createFileRoute('/_authenticated/reviews/')({
 })
 
 function ReviewsPage() {
-  const { data, isLoading } = useReviews()
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useReviews()
 
   return (
     <div className="p-6 space-y-4">
@@ -19,7 +27,28 @@ function ReviewsPage() {
         </Link>
       </div>
 
-      {isLoading ? <p>Loading...</p> : <ReviewsTable data={data ?? []} />}
+      {isLoading && <p>Loading...</p>}
+
+      {isError && (
+        <p className="text-destructive">
+          Could not load reviews: {error.message}
+        </p>
+      )}
+
+      {data && (
+        <>
+          <ReviewsTable data={data.reviews} />
+          {hasNextPage && (
+            <Button
+              variant="outline"
+              disabled={isFetchingNextPage}
+              onClick={() => void fetchNextPage()}
+            >
+              {isFetchingNextPage ? 'Loading…' : 'Load more'}
+            </Button>
+          )}
+        </>
+      )}
     </div>
   )
 }

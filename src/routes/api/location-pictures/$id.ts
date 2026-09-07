@@ -18,7 +18,7 @@ export const Route = createFileRoute('/api/location-pictures/$id')({
             }
 
             return Response.json(locationPicture)
-          }
+          },
         },
         PUT: {
           middleware: [authMiddleware],
@@ -31,19 +31,19 @@ export const Route = createFileRoute('/api/location-pictures/$id')({
 
             const updated = await prisma.locationPicture.update({
               where: { id: params.id },
-              data: data.data
+              data: data.data,
             })
 
             return Response.json(updated)
-          }
+          },
         },
         DELETE: {
           middleware: [authMiddleware],
           handler: async ({ params }) => {
             await prisma.locationPicture.delete({ where: { id: params.id } })
             return new Response(null, { status: 204 })
-          }
+          },
         },
-      })
-  }
+      }),
+  },
 })

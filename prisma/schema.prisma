@@ -1,6 +1,11 @@
 // prisma/schema.prisma
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  // pg_trgm is what makes the ILIKE '%q%' location search indexable.
+  // queryCompiler drops the 15 MB native rust engine: prisma compiles queries
+  // in typescript and sends them through the driver adapter instead.
+  engineType      = "client"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 generator zod {
@@ -11,8 +16,9 @@ generator zod {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm]
 }
 
 model User {
@@ -54,6 +60,12 @@ model Location {
   tags     LocationTag[]
   /// @zod .optional()
   pictures LocationPicture[]
+
+  // The search is `ILIKE '%q%'`, and a leading wildcard rules out a B-tree.
+  // A trigram GIN index is the one that answers it.
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "Location_name_trgm_idx")
+  @@index([city(ops: raw("gin_trgm_ops"))], type: Gin, map: "Location_city_trgm_idx")
+  @@index([country(ops: raw("gin_trgm_ops"))], type: Gin, map: "Location_country_trgm_idx")
 }
 
 model Dish {
@@ -67,6 +79,8 @@ model Dish {
 
   location Location  @relation(fields: [locationId], references: [id])
   tags     DishTag[]
+
+  @@index([locationId])
 }
 
 model Tag {
@@ -98,6 +112,10 @@ model Rating {
   reviews        Review[]        @relation("RatingToReviews")
   tags           RatingTag[]
   ratingPictures RatingPicture[]
+
+  // A rating feeds an average, so one person gets one score per location.
+  @@unique([userId, locationId])
+  @@index([locationId])
 }
 
 model Review {
@@ -117,6 +135,12 @@ model Review {
 
   pictures ReviewPicture[]
   tags     ReviewTag[]
+
+  @@index([locationId])
+  @@index([userId])
+  @@index([ratingId])
+  // The list page orders by newest first.
+  @@index([createdAt])
 }
 
 // Join rows and pictures belong to their parent, so they cascade. Review,
@@ -129,6 +153,7 @@ model LocationTag {
   tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([locationId, tagId])
+  @@index([tagId])
 }
 
 model DishTag {
@@ -138,6 +163,7 @@ model DishTag {
   tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([dishId, tagId])
+  @@index([tagId])
 }
 
 model RatingTag {
@@ -147,6 +173,7 @@ model RatingTag {
   tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([ratingId, tagId])
+  @@index([tagId])
 }
 
 model ReviewTag {
@@ -156,6 +183,7 @@ model ReviewTag {
   tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([reviewId, tagId])
+  @@index([tagId])
 }
 
 model LocationPicture {
@@ -166,6 +194,8 @@ model LocationPicture {
   createdAt  DateTime @default(now())
 
   location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([locationId])
 }
 
 model RatingPicture {
@@ -177,6 +207,8 @@ model RatingPicture {
   createdAt DateTime @default(now())
 
   rating Rating @relation(fields: [ratingId], references: [id], onDelete: Cascade)
+
+  @@index([ratingId])
 }
 
 model ReviewPicture {
@@ -187,4 +219,6 @@ model ReviewPicture {
   createdAt DateTime @default(now())
 
   review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
 }

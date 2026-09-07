@@ -1,68 +1,75 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { getConfig } from '@/lib/workos/ssr/config';
-import { saveSession } from '@/lib/workos/ssr/session';
-import { getWorkOS } from '@/lib/workos/ssr/workos';
+import { createFileRoute } from '@tanstack/react-router'
+import { getConfig } from '@/lib/workos/ssr/config'
+import { saveSession } from '@/lib/workos/ssr/session'
+import { getWorkOS } from '@/lib/workos/ssr/workos'
 
 export const Route = createFileRoute('/api/auth/callback')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        let url = new URL(request.url);
-        const code = url.searchParams.get('code');
-        const state = url.searchParams.get('state');
-        let returnPathname = state && state !== 'null' ? JSON.parse(atob(state)).returnPathname : null;
+        let url = new URL(request.url)
+        const code = url.searchParams.get('code')
+        const state = url.searchParams.get('state')
+        let returnPathname: string | null = null
 
         if (code) {
           try {
+            // Anyone can put anything in `state`, so a bad one must not escape
+            // this try and become a raw 500.
+            if (state && state !== 'null') {
+              returnPathname = JSON.parse(atob(state)).returnPathname ?? null
+            }
+
             // Use the code returned to us by AuthKit and authenticate the user with WorkOS
             const { accessToken, refreshToken, user, impersonator } =
               await getWorkOS().userManagement.authenticateWithCode({
                 clientId: getConfig('clientId'),
                 code,
-              });
+              })
 
             // If baseURL is provided, use it instead of request.nextUrl
             // This is useful if the app is being run in a container like docker where
             // the hostname can be different from the one in the request
-            url = new URL(request.url);
+            url = new URL(request.url)
 
             // Cleanup params
-            url.searchParams.delete('code');
-            url.searchParams.delete('state');
+            url.searchParams.delete('code')
+            url.searchParams.delete('state')
 
             // Redirect to the requested path and store the session
-            returnPathname = returnPathname ?? '/';
+            returnPathname = returnPathname ?? '/'
 
             // Extract the search params if they are present
             if (returnPathname.includes('?')) {
-              const newUrl = new URL(returnPathname, 'https://example.com');
-              url.pathname = newUrl.pathname;
+              const newUrl = new URL(returnPathname, 'https://example.com')
+              url.pathname = newUrl.pathname
 
               for (const [key, value] of newUrl.searchParams) {
-                url.searchParams.append(key, value);
+                url.searchParams.append(key, value)
               }
             } else {
-              url.pathname = returnPathname;
+              url.pathname = returnPathname
             }
 
-            const response = redirectWithFallback(url.toString());
+            const response = redirectWithFallback(url.toString())
 
-            if (!accessToken || !refreshToken) throw new Error('response is missing tokens');
+            if (!accessToken || !refreshToken)
+              throw new Error('response is missing tokens')
 
-            await saveSession({ accessToken, refreshToken, user, impersonator });
-            return response;
+            await saveSession({ accessToken, refreshToken, user, impersonator })
+            return response
           } catch (error) {
             const errorRes = {
               error: error instanceof Error ? error.message : String(error),
-            };
+            }
 
-            console.error(errorRes);
+            console.error(errorRes)
 
-            return errorResponse();
+            return errorResponse()
           }
         }
 
-        return errorResponse();
+        return errorResponse()
 
         function errorResponse() {
           return errorResponseWithFallback({
@@ -71,23 +78,25 @@ export const Route = createFileRoute('/api/auth/callback')({
               description:
                 "Couldn't sign in. If you are not sure what happened, please contact your organization admin.",
             },
-          });
+          })
         }
       },
     },
   },
-});
+})
 
 function redirectWithFallback(redirectUri: string, headers?: Headers) {
-  const newHeaders = headers ? new Headers(headers) : new Headers();
-  newHeaders.set('Location', redirectUri);
+  const newHeaders = headers ? new Headers(headers) : new Headers()
+  newHeaders.set('Location', redirectUri)
 
-  return new Response(null, { status: 307, headers: newHeaders });
+  return new Response(null, { status: 307, headers: newHeaders })
 }
 
-function errorResponseWithFallback(errorBody: { error: { message: string; description: string } }) {
+function errorResponseWithFallback(errorBody: {
+  error: { message: string; description: string }
+}) {
   return new Response(JSON.stringify(errorBody), {
     status: 500,
     headers: { 'Content-Type': 'application/json' },
-  });
+  })
 }

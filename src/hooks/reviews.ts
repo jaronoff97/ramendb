@@ -1,21 +1,53 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  ReviewCreateInputObjectSchema,
-  ReviewUpdateInputObjectZodSchema
-} from 'prisma/generated/schemas'
-import type { z } from 'zod';
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
+import type { z } from 'zod'
 import type {
   ReviewPureType,
-  ReviewUpdateInputObjectSchema
-} from 'prisma/generated/schemas';
+  ReviewUpdateInputObjectSchema,
+} from 'prisma/generated/schemas'
 import { apiFetch } from '@/lib/api'
 
-export type UpdateReviewInputType = z.input<typeof ReviewUpdateInputObjectSchema>;
+export type UpdateReviewInputType = z.input<
+  typeof ReviewUpdateInputObjectSchema
+>
 
+/** Exactly the columns the reviews table renders. */
+export interface ReviewListRow {
+  id: string
+  title: string | null
+  createdAt: string
+  user: { name: string | null }
+  rating: { value: number } | null
+  location: { name: string }
+}
+
+export interface ReviewPage {
+  reviews: Array<ReviewListRow>
+  nextCursor: string | null
+}
+
+/**
+ * The list route pages now, so this walks the pages instead of asking for the
+ * whole table. `useInfiniteQuery` keeps the loaded pages in one flat array.
+ */
 export function useReviews() {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ['reviews'],
-    queryFn: () => apiFetch<Array<ReviewPureType>>('/api/reviews/'),
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) => {
+      const params = new URLSearchParams()
+      if (pageParam) params.set('cursor', pageParam)
+      const suffix = params.size > 0 ? `?${params.toString()}` : ''
+      return apiFetch<ReviewPage>(`/api/reviews/${suffix}`)
+    },
+    getNextPageParam: (last) => last.nextCursor,
+    select: (data) => ({
+      reviews: data.pages.flatMap((page) => page.reviews),
+    }),
   })
 }
 
@@ -24,20 +56,6 @@ export function useReview(id?: string) {
     queryKey: ['reviews', id],
     queryFn: () => apiFetch<ReviewPureType>(`/api/reviews/${id}`),
     enabled: !!id,
-  })
-}
-
-export function useCreateReview() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: async (input: unknown) => {
-      const data = ReviewCreateInputObjectSchema.parse(input)
-      return apiFetch('/api/reviews/', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      })
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['reviews'] }),
   })
 }
 
@@ -51,14 +69,13 @@ export function useUpdateReview() {
       id: string
       input: UpdateReviewInputType
     }) => {
-      const parsed = ReviewUpdateInputObjectZodSchema.safeParse(input)
-      if (!parsed.success) {
-        // A return here would look like a success to React Query.
-        throw new Error(parsed.error.message)
-      }
+      // No client-side validation here on purpose. The PUT route parses the
+      // same schema and answers 400. Importing one value from the generated
+      // barrel pulled all 455 schema files, and decimal.js with them, which
+      // cost this page about 290 KB to say "invalid" a moment sooner.
       return apiFetch(`/api/reviews/${id}`, {
         method: 'PUT',
-        body: JSON.stringify(parsed.data),
+        body: JSON.stringify(input),
       })
     },
     onSuccess: (_data, { id }) => {

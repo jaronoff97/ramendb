@@ -28,7 +28,7 @@ export const Route = createFileRoute('/api/review-pictures/$id')({
             }
 
             return Response.json(reviewPicture)
-          }
+          },
         },
         PUT: {
           middleware: [authMiddleware],
@@ -47,11 +47,11 @@ export const Route = createFileRoute('/api/review-pictures/$id')({
 
             const updated = await prisma.reviewPicture.update({
               where: { id: params.id },
-              data: updateData
+              data: updateData,
             })
 
             return Response.json(updated)
-          }
+          },
         },
         DELETE: {
           middleware: [authMiddleware],
@@ -61,8 +61,8 @@ export const Route = createFileRoute('/api/review-pictures/$id')({
 
             await prisma.reviewPicture.delete({ where: { id: params.id } })
             return new Response(null, { status: 204 })
-          }
+          },
         },
-      })
-  }
+      }),
+  },
 })

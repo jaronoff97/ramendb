@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { apiFetch } from '../api';
+import { apiFetch } from '../api'
 import type { z } from 'zod'
 import type { reviewPictureSchema } from '@/lib/types'
 

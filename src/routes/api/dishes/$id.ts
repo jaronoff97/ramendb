@@ -18,7 +18,7 @@ export const Route = createFileRoute('/api/dishes/$id')({
             }
 
             return Response.json(dish)
-          }
+          },
         },
         PUT: {
           middleware: [authMiddleware],
@@ -31,19 +31,19 @@ export const Route = createFileRoute('/api/dishes/$id')({
 
             const updated = await prisma.dish.update({
               where: { id: params.id },
-              data: data.data
+              data: data.data,
             })
 
             return Response.json(updated)
-          }
+          },
         },
         DELETE: {
           middleware: [authMiddleware],
           handler: async ({ params }) => {
             await prisma.dish.delete({ where: { id: params.id } })
             return new Response(null, { status: 204 })
-          }
+          },
         },
-      })
-  }
+      }),
+  },
 })

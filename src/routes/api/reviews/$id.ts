@@ -1,11 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ReviewResultSchema, ReviewUpdateInputObjectSchema } from 'prisma/generated/schemas'
+import {
+  ReviewResultSchema,
+  ReviewUpdateInputObjectSchema,
+} from 'prisma/generated/schemas'
 import { prisma } from '@/lib/prisma'
 import { authMiddleware } from '@/lib/middlewares/require-auth'
 import { ownerGate } from '@/lib/authz'
 
 async function denyUnlessOwner(id: string, userId: string) {
-  const review = await prisma.review.findUnique({ where: { id }, select: { userId: true } })
+  const review = await prisma.review.findUnique({
+    where: { id },
+    select: { userId: true },
+  })
   return ownerGate(review, userId, 'Review')
 }
 
@@ -21,7 +27,7 @@ export const Route = createFileRoute('/api/reviews/$id')({
                 tags: { include: { tag: true } },
                 pictures: true,
                 location: true,
-                rating: true
+                rating: true,
               },
             })
             if (!review) {
@@ -29,7 +35,7 @@ export const Route = createFileRoute('/api/reviews/$id')({
             }
             const data = ReviewResultSchema.parse(review)
             return Response.json(data)
-          }
+          },
         },
         PUT: {
           middleware: [authMiddleware],
@@ -48,11 +54,11 @@ export const Route = createFileRoute('/api/reviews/$id')({
 
             const updated = await prisma.review.update({
               where: { id: params.id },
-              data: updateData
+              data: updateData,
             })
 
             return Response.json(updated)
-          }
+          },
         },
         DELETE: {
           middleware: [authMiddleware],
@@ -62,8 +68,8 @@ export const Route = createFileRoute('/api/reviews/$id')({
 
             await prisma.review.delete({ where: { id: params.id } })
             return new Response(null, { status: 204 })
-          }
+          },
         },
-      })
-  }
+      }),
+  },
 })

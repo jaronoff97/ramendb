@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { DishCreateInputObjectSchema } from 'prisma/generated/schemas';
+import { createFileRoute } from '@tanstack/react-router'
+import { DishCreateInputObjectSchema } from 'prisma/generated/schemas'
 import { prisma } from '@/lib/prisma'
-import { authMiddleware } from '@/lib/middlewares/require-auth';
+import { authMiddleware } from '@/lib/middlewares/require-auth'
 
 export const Route = createFileRoute('/api/dishes/')({
   server: {
@@ -11,7 +11,7 @@ export const Route = createFileRoute('/api/dishes/')({
           handler: async () => {
             const dishes = await prisma.dish.findMany()
             return Response.json(dishes)
-          }
+          },
         },
         POST: {
           middleware: [authMiddleware],
@@ -23,8 +23,8 @@ export const Route = createFileRoute('/api/dishes/')({
             }
             const dish = await prisma.dish.create({ data: data.data })
             return Response.json(dish)
-          }
+          },
         },
-      })
-  }
+      }),
+  },
 })

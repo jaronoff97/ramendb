@@ -12,6 +12,7 @@ export function ownerGate(
   label: string,
 ): Response | null {
   if (!record) return new Response(`${label} not found`, { status: 404 })
-  if (record.userId !== userId) return new Response('Forbidden', { status: 403 })
+  if (record.userId !== userId)
+    return new Response('Forbidden', { status: 403 })
   return null
 }

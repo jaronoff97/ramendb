@@ -500,6 +500,7 @@ export * from './RatingUpsertWithWhereUniqueWithoutUserInput.schema';
 export * from './RatingUpsertWithoutRatingPicturesInput.schema';
 export * from './RatingUpsertWithoutReviewsInput.schema';
 export * from './RatingUpsertWithoutTagsInput.schema';
+export * from './RatingUserIdLocationIdCompoundUniqueInput.schema';
 export * from './RatingWhereInput.schema';
 export * from './RatingWhereUniqueInput.schema';
 export * from './ReviewArgs.schema';

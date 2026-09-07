@@ -6,13 +6,13 @@
  * @returns A function that can only be called once.
  */
 export function lazy<T>(fn: () => T): () => T {
-  let called = false;
-  let result: T;
+  let called = false
+  let result: T
   return () => {
     if (!called) {
-      result = fn();
-      called = true;
+      result = fn()
+      called = true
     }
-    return result;
-  };
+    return result
+  }
 }

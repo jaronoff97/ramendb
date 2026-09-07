@@ -3,27 +3,28 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import Header from '../components/Header'
 import WorkOSProvider from '../integrations/workos/provider'
-import StoreDevtools from '../lib/demo-store-devtools'
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
+import { Devtools } from '../integrations/devtools'
+import { RouteError, RouteNotFound } from '../components/RouteError'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
-import type { User } from '@workos-inc/node';
-import { getAuth, getSignInUrl } from '@/lib/workos/server-functions'
+import type { User } from '@workos-inc/node'
+import { getSession } from '@/lib/workos/server-functions'
 
 interface RamenDBRouterContext {
   queryClient: QueryClient
   user?: User
   accessToken?: string
+  signInUrl?: string
 }
 
 export const Route = createRootRouteWithContext<RamenDBRouterContext>()({
+  // One server call, not two. `getSignInUrl` used to run in the loader below
+  // and only joined two constants together.
   beforeLoad: async () => {
-    const { user, accessToken } = await getAuth();
-    return { user, accessToken };
+    const { user, accessToken, signInUrl } = await getSession()
+    return { user, accessToken, signInUrl }
   },
   head: () => ({
     meta: [
@@ -45,19 +46,17 @@ export const Route = createRootRouteWithContext<RamenDBRouterContext>()({
       },
     ],
   }),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
   shellComponent: RootDocument,
-  loader: async ({ context }) => {
-    const { user } = context;
-    const url = await getSignInUrl();
-    return {
-      user,
-      url,
-    };
-  },
+  loader: ({ context }) => ({
+    user: context.user,
+    url: context.signInUrl,
+  }),
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { user, url } = Route.useLoaderData();
+  const { user, url } = Route.useLoaderData()
 
   return (
     <html lang="en">
@@ -68,19 +67,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <WorkOSProvider>
           <Header user={user} signInUrl={url} />
           {children}
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-              StoreDevtools,
-              TanStackQueryDevtools,
-            ]}
-          />
+          <Devtools />
         </WorkOSProvider>
         <Scripts />
       </body>

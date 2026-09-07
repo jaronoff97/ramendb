@@ -20,7 +20,7 @@ export const Route = createFileRoute('/api/tags/$id')({
             }
 
             return Response.json(tag)
-          }
+          },
         },
         PUT: {
           middleware: [authMiddleware],
@@ -33,19 +33,19 @@ export const Route = createFileRoute('/api/tags/$id')({
 
             const updated = await prisma.tag.update({
               where: { id: params.id },
-              data: data.data
+              data: data.data,
             })
 
             return Response.json(updated)
-          }
+          },
         },
         DELETE: {
           middleware: [authMiddleware],
           handler: async ({ params }) => {
             await prisma.tag.delete({ where: { id: params.id } })
             return new Response(null, { status: 204 })
-          }
+          },
         },
-      })
-  }
+      }),
+  },
 })

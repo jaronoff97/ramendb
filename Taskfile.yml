@@ -105,12 +105,25 @@ tasks:
     deps: [install]
     cmds: [npm run check]
 
+  browser:check:
+    desc: Load the app in a headless browser and fail on any console error
+    summary: |
+      The map only breaks in a browser. Typecheck, lint and vitest all pass
+      while it throws on WebGL, leaflet panes or a missing worker, so this is
+      the only check that catches it. Set SHOT=/tmp/map.png for a screenshot.
+    deps: [install]
+    cmds:
+      - '{{.COMPOSE}} --profile app up -d --build --wait'
+      - defer: '{{.COMPOSE}} --profile app down'
+      - node scripts/browser-check.mjs http://localhost:{{.APP_PORT | default 3000}}/ 12000
+
   check:
     desc: What CI should run
     cmds:
       - task: typecheck
       - task: lint
       - task: test
+      - task: browser:check
 
   clean:
     desc: Remove build output and containers

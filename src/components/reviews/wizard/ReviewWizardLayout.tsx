@@ -10,9 +10,7 @@ export function ReviewWizardLayout({ children }: { children: ReactNode }) {
       <Card className="w-full max-w-2xl">
         <ReviewWizardHeader />
         <StepWrapper>
-          <CardContent>
-            {children}
-          </CardContent>
+          <CardContent>{children}</CardContent>
         </StepWrapper>
         <ReviewWizardNav />
       </Card>

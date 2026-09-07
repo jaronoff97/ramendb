@@ -1,49 +1,71 @@
-import { useState } from "react";
-import { useMap, useMapEvents } from "react-leaflet";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useEffect, useState } from 'react'
+import { useMap, useMapEvents } from 'react-leaflet'
+import type { OSMPlace } from '@/hooks/useOverpass'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useOverpassSearch } from "@/hooks/useOverpass";
-import { useDebounce } from "@/hooks/useDebounce";
+} from '@/components/ui/select'
+import { useOverpassSearch } from '@/hooks/useOverpass'
+import { useDebounce } from '@/hooks/useDebounce'
 
 interface Props {
-  center: { lat: number; lon: number };
-  onSelectPlace?: (place: any) => void // callback for selected place
+  center: { lat: number; lon: number }
+  onSelectPlace?: (place: OSMPlace) => void
+  onResults?: (places: Array<OSMPlace>) => void
 }
 
-export function FloatingSearchPanel({ center: initialCenter, onSelectPlace }: Props) {
-  const map = useMap();
-  const [zoom, setZoom] = useState<number | undefined>(undefined);
-  const [center, setCenter] = useState<{ lat: number; lon: number }>(initialCenter);
-  useMapEvents({
-    dragend: () => {
-      const newCenter = map.getCenter()
-      setCenter({
-        lat: newCenter.lat,
-        lon: newCenter.lng
-      });
-    },
-    zoomend: () => {
-      const bounds = map.getBounds();
-      const mapCenter = bounds.getCenter(); // LatLng
-      const northEast = bounds.getNorthEast(); // LatLng
+/** Overpass gets slow over a huge bounding box, so cap what we ask for. */
+const MAX_RADIUS_METERS = 20_000
 
-      // Distance in meters
-      const radius = mapCenter.distanceTo(northEast);
-      setZoom(radius);
-    },
-  });
-  const [type, setType] = useState<"restaurant" | "bar">("restaurant");
-  const [name, setName] = useState("");
-  const debouncedName = useDebounce(name, 500);
+export function FloatingSearchPanel({
+  center: initialCenter,
+  onSelectPlace,
+  onResults,
+}: Props) {
+  const map = useMap()
+  // Centre and search radius come from the map together. They used to live in
+  // two states, one of them called `zoom` while it held metres, and the radius
+  // stayed undefined until the first zoom.
+  const [view, setView] = useState({
+    center: initialCenter,
+    radiusMeters: 2000,
+  })
 
-  const { data, isLoading } = useOverpassSearch(type, debouncedName, center, zoom);
+  const syncView = () => {
+    const bounds = map.getBounds()
+    const mapCenter = bounds.getCenter()
+    setView({
+      center: { lat: mapCenter.lat, lon: mapCenter.lng },
+      radiusMeters: Math.min(
+        Math.round(mapCenter.distanceTo(bounds.getNorthEast())),
+        MAX_RADIUS_METERS,
+      ),
+    })
+  }
+
+  // `moveend` fires after a drag and after a zoom, so one handler covers both.
+  useMapEvents({ moveend: syncView })
+
+  const [type, setType] = useState<'restaurant' | 'bar'>('restaurant')
+  const [name, setName] = useState('')
+  const debouncedName = useDebounce(name, 500)
+
+  const { data, isLoading, isError } = useOverpassSearch(
+    type,
+    debouncedName,
+    view.center,
+    view.radiusMeters,
+  )
+
+  // Hand the results up so the map can pin them.
+  useEffect(() => {
+    onResults?.(data ?? [])
+  }, [data, onResults])
 
   return (
     <div
@@ -81,9 +103,18 @@ export function FloatingSearchPanel({ center: initialCenter, onSelectPlace }: Pr
           <div className="text-sm text-muted-foreground">Loading…</div>
         )}
 
-        {!isLoading && data?.length === 0 && name.length > 1 && (
-          <div className="text-sm text-muted-foreground">No results</div>
+        {isError && (
+          <div className="text-sm text-destructive">
+            OpenStreetMap search is unavailable. Try again in a moment.
+          </div>
         )}
+
+        {!isLoading &&
+          !isError &&
+          data?.length === 0 &&
+          name.trim().length > 1 && (
+            <div className="text-sm text-muted-foreground">No results</div>
+          )}
 
         <ul className="space-y-2">
           {data?.map((place) => (
@@ -92,8 +123,8 @@ export function FloatingSearchPanel({ center: initialCenter, onSelectPlace }: Pr
                 variant="ghost"
                 className="w-full justify-start text-left"
                 onClick={() => {
-                  map.setView([place.lat, place.lon], 17);
-                  onSelectPlace?.(place);
+                  map.setView([place.lat, place.lon], 17)
+                  onSelectPlace?.(place)
                 }}
               >
                 <div>
@@ -108,5 +139,5 @@ export function FloatingSearchPanel({ center: initialCenter, onSelectPlace }: Pr
         </ul>
       </div>
     </div>
-  );
+  )
 }

@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "generatorVersion": "6.19.0",
-  "generatedAt": "2026-09-07T14:15:47.858Z",
+  "generatedAt": "2026-09-07T15:42:28.032Z",
   "outputPath": "/Users/jea/Code/ramendb/prisma/generated",
   "files": [
     "schemas/enums/TransactionIsolationLevel.schema.ts",
@@ -229,6 +229,7 @@
     "schemas/objects/UserScalarRelationFilter.schema.ts",
     "schemas/objects/RatingPictureListRelationFilter.schema.ts",
     "schemas/objects/RatingPictureOrderByRelationAggregateInput.schema.ts",
+    "schemas/objects/RatingUserIdLocationIdCompoundUniqueInput.schema.ts",
     "schemas/objects/RatingCountOrderByAggregateInput.schema.ts",
     "schemas/objects/RatingAvgOrderByAggregateInput.schema.ts",
     "schemas/objects/RatingMaxOrderByAggregateInput.schema.ts",

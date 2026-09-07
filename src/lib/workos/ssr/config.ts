@@ -1,18 +1,18 @@
-import { lazy } from './utils';
-import type { AuthKitConfig } from './interfaces';
+import { lazy } from './utils'
+import type { AuthKitConfig } from './interfaces'
 
-type ValueSource = Record<string, any> | ((key: string) => any);
+type ValueSource = Record<string, any> | ((key: string) => any)
 
 /**
  * Default environment variable source that uses process.env
  */
 const defaultSource: ValueSource = (key: string): string | undefined => {
   try {
-    return process.env[key];
+    return process.env[key]
   } catch {
-    return undefined;
+    return undefined
   }
-};
+}
 
 /**
  * Configuration class for AuthKit.
@@ -29,11 +29,16 @@ export class Configuration {
     // act as the actual time-limited aspects of the session.
     cookieMaxAge: 60 * 60 * 24 * 400,
     apiHostname: 'api.workos.com',
-  };
+  }
 
-  private valueSource: ValueSource = defaultSource;
+  private valueSource: ValueSource = defaultSource
 
-  private readonly requiredKeys: Array<keyof AuthKitConfig> = ['clientId', 'apiKey', 'redirectUri', 'cookiePassword'];
+  private readonly requiredKeys: Array<keyof AuthKitConfig> = [
+    'clientId',
+    'apiKey',
+    'redirectUri',
+    'cookiePassword',
+  ]
 
   /**
    * Convert a camelCase string to an uppercase, underscore-separated environment variable name.
@@ -41,75 +46,83 @@ export class Configuration {
    * @returns The environment variable name
    */
   protected getEnvironmentVariableName(str: string) {
-    return `WORKOS_${str.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase()}`;
+    return `WORKOS_${str.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase()}`
   }
 
   private updateConfig(config: Partial<AuthKitConfig>): void {
-    this.config = { ...this.config, ...config };
+    this.config = { ...this.config, ...config }
   }
 
   setValueSource(source: ValueSource): void {
-    this.valueSource = source;
+    this.valueSource = source
   }
 
-  configure(configOrSource: Partial<AuthKitConfig> | ValueSource, source?: ValueSource): void {
+  configure(
+    configOrSource: Partial<AuthKitConfig> | ValueSource,
+    source?: ValueSource,
+  ): void {
     if (typeof configOrSource === 'function') {
-      this.setValueSource(configOrSource);
+      this.setValueSource(configOrSource)
     } else if (typeof configOrSource === 'object' && !source) {
-      this.updateConfig(configOrSource);
+      this.updateConfig(configOrSource)
     } else if (typeof configOrSource === 'object' && source) {
-      this.updateConfig(configOrSource);
-      this.setValueSource(source);
+      this.updateConfig(configOrSource)
+      this.setValueSource(source)
     }
 
     // Validate the cookiePassword if provided
     if (this.config.cookiePassword && this.config.cookiePassword.length < 32) {
-      throw new Error('cookiePassword must be at least 32 characters long');
+      throw new Error('cookiePassword must be at least 32 characters long')
     }
   }
 
   getValue<T extends keyof AuthKitConfig>(key: T): AuthKitConfig[T] {
     // First check environment variables
-    const envKey = this.getEnvironmentVariableName(key);
-    let envValue: AuthKitConfig[T] | undefined = undefined;
+    const envKey = this.getEnvironmentVariableName(key)
+    let envValue: AuthKitConfig[T] | undefined = undefined
 
-    const { valueSource, config } = this;
+    const { valueSource, config } = this
     if (typeof valueSource === 'function') {
-      envValue = valueSource(envKey);
+      envValue = valueSource(envKey)
     } else {
-      envValue = valueSource[envKey];
+      envValue = valueSource[envKey]
     }
 
     // If environment variable exists, use it
     if (envValue != null) {
       // Convert string values to appropriate types
       if (key === 'apiHttps' && typeof envValue === 'string') {
-        return (envValue === 'true') as AuthKitConfig[T];
+        return (envValue === 'true') as AuthKitConfig[T]
       }
 
-      if ((key === 'apiPort' || key === 'cookieMaxAge') && typeof envValue === 'string') {
-        const num = parseInt(envValue, 10);
-        return (isNaN(num) ? undefined : num) as AuthKitConfig[T];
+      if (
+        (key === 'apiPort' || key === 'cookieMaxAge') &&
+        typeof envValue === 'string'
+      ) {
+        const num = parseInt(envValue, 10)
+        return (isNaN(num) ? undefined : num) as AuthKitConfig[T]
       }
 
-      return envValue as AuthKitConfig[T];
+      return envValue as AuthKitConfig[T]
     }
 
     // Then check programmatically provided config
     if (key in config && config[key] != undefined) {
-      return config[key] as AuthKitConfig[T];
+      return config[key] as AuthKitConfig[T]
     }
 
     if (this.requiredKeys.includes(key)) {
-      throw new Error(`Missing required configuration value for ${key} (${envKey}).`);
+      throw new Error(
+        `Missing required configuration value for ${key} (${envKey}).`,
+      )
     }
 
-    return undefined as AuthKitConfig[T];
+    return undefined as AuthKitConfig[T]
   }
 }
 
 // lazy-instantiate the Configuration instance
-const getConfigurationInstance = lazy(() => new Configuration());
+const getConfigurationInstance = lazy(() => new Configuration())
 
 /**
  * Configure AuthKit with a custom value source.
@@ -118,7 +131,7 @@ const getConfigurationInstance = lazy(() => new Configuration());
  * @example
  * configure(key => Deno.env.get(key));
  */
-export function configure(source: ValueSource): void;
+export function configure(source: ValueSource): void
 /**
  * Configure AuthKit with custom values.
  * @param config The configuration values
@@ -131,7 +144,7 @@ export function configure(source: ValueSource): void;
  *    cookiePassword: 'your-cookie-password',
  *  });
  */
-export function configure(config: Partial<AuthKitConfig>): void;
+export function configure(config: Partial<AuthKitConfig>): void
 /**
  * Configure AuthKit with custom values and a custom value source.
  * @param config The configuration values
@@ -142,10 +155,16 @@ export function configure(config: Partial<AuthKitConfig>): void;
  *   clientId: 'your-client-id',
  * }, env);
  */
-export function configure(config: Partial<AuthKitConfig>, source: ValueSource): void;
-export function configure(configOrSource: Partial<AuthKitConfig> | ValueSource, source?: ValueSource): void {
-  const config = getConfigurationInstance();
-  config.configure(configOrSource, source);
+export function configure(
+  config: Partial<AuthKitConfig>,
+  source: ValueSource,
+): void
+export function configure(
+  configOrSource: Partial<AuthKitConfig> | ValueSource,
+  source?: ValueSource,
+): void {
+  const config = getConfigurationInstance()
+  config.configure(configOrSource, source)
 }
 
 /**
@@ -156,7 +175,9 @@ export function configure(configOrSource: Partial<AuthKitConfig> | ValueSource, 
  * @param key The configuration key
  * @returns The configuration value
  */
-export function getConfig<T extends keyof AuthKitConfig>(key: T): AuthKitConfig[T] {
-  const config = getConfigurationInstance();
-  return config.getValue(key);
+export function getConfig<T extends keyof AuthKitConfig>(
+  key: T,
+): AuthKitConfig[T] {
+  const config = getConfigurationInstance()
+  return config.getValue(key)
 }

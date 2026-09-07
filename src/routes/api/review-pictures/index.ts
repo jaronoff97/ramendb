@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router'
 import { prisma } from '@/lib/prisma'
-import { authMiddleware } from '@/lib/middlewares/require-auth';
-import { reviewPicturesPayloadSchema } from '@/lib/types';
+import { authMiddleware } from '@/lib/middlewares/require-auth'
+import { reviewPicturesPayloadSchema } from '@/lib/types'
 
 export const Route = createFileRoute('/api/review-pictures/')({
   server: {
@@ -11,7 +11,7 @@ export const Route = createFileRoute('/api/review-pictures/')({
           handler: async () => {
             const reviewPictures = await prisma.reviewPicture.findMany()
             return Response.json(reviewPictures)
-          }
+          },
         },
         POST: {
           middleware: [authMiddleware],
@@ -23,7 +23,9 @@ export const Route = createFileRoute('/api/review-pictures/')({
             }
 
             // Every picture must attach to a review the caller owns.
-            const reviewIds = [...new Set(data.data.pictures.map((p) => p.reviewId))]
+            const reviewIds = [
+              ...new Set(data.data.pictures.map((p) => p.reviewId)),
+            ]
             const owned = await prisma.review.count({
               where: { id: { in: reviewIds }, userId: context.userId },
             })
@@ -35,8 +37,8 @@ export const Route = createFileRoute('/api/review-pictures/')({
               data: data.data.pictures,
             })
             return Response.json(created)
-          }
+          },
         },
-      })
-  }
+      }),
+  },
 })

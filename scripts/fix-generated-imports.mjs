@@ -3,9 +3,19 @@
 // repo typechecks. Run this after every `prisma generate`.
 // ponytail: delete this script when the generator stops emitting the dead import.
 import { existsSync } from 'node:fs'
-import { readdir, readFile, writeFile } from 'node:fs/promises'
+import { access, readdir, readFile, writeFile } from 'node:fs/promises'
 
 const ROOT = new URL('../prisma/generated/', import.meta.url)
+
+// This also runs from `postinstall`, which happens before `prisma generate`
+// has ever run, and inside a docker layer that holds only package.json. There
+// is nothing to clean in either case.
+try {
+  await access(ROOT)
+} catch {
+  console.log('fix-generated-imports: nothing generated yet, skipping')
+  process.exit(0)
+}
 const IMPORT_LINE = /^import type \{ Prisma \} from '@prisma\/client';\r?\n/m
 
 let fixed = 0

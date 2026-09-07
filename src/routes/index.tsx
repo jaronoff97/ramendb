@@ -1,38 +1,36 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react';
-import type { LatLngTuple } from 'leaflet';
-import type { MapMarker } from '@/components/leaflet/map';
-import LeafletMap from '@/components/leaflet/map';
-import { FloatingSearchPanel } from '@/components/leaflet/search';
+import { Suspense, lazy } from 'react'
+import type { LatLngTuple } from 'leaflet'
+import { ClientOnly } from '@/components/ClientOnly'
+
+// One lazy boundary for the whole map. leaflet and maplibre touch `window`
+// while their modules evaluate, so a static import here would break the
+// server render. See MapView for why the search panel is not a second lazy.
+const MapView = lazy(() => import('@/components/leaflet/MapView'))
 
 export const Route = createFileRoute('/')({
-  ssr: false,
   component: App,
 })
 
-function App() {
-  const center: LatLngTuple = [40.71817, -73.99294];
-  const [selectedMarker, setSelectedMarker] = useState<MapMarker | null>(null);
-  const [markers] = useState<Array<MapMarker>>([]);
+const NEW_YORK: LatLngTuple = [40.71817, -73.99294]
 
+/** What the server sends, and what the browser shows until the map arrives. */
+function MapSkeleton() {
   return (
-    <LeafletMap
-      center={center}
-      zoom={13}
-      markers={markers}
-      selectedMarker={selectedMarker}
-    >
-      <FloatingSearchPanel
-        center={{ lat: center[0], lon: center[1] }}
-        onSelectPlace={(place) => {
-          setSelectedMarker({
-            id: place.id,
-            position: [place.lat, place.lon],
-            label: place.name ?? "Unnamed",
-            data: place,
-          });
-        }}
-      />
-    </LeafletMap>
+    <div
+      className="h-screen w-full bg-muted animate-pulse"
+      role="status"
+      aria-label="Loading the map"
+    />
+  )
+}
+
+function App() {
+  return (
+    <ClientOnly fallback={<MapSkeleton />}>
+      <Suspense fallback={<MapSkeleton />}>
+        <MapView center={NEW_YORK} />
+      </Suspense>
+    </ClientOnly>
   )
 }

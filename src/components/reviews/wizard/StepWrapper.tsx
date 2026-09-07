@@ -1,9 +1,9 @@
-import { useEffect } from "react"
-import { useAtomValue } from "jotai"
-import { useWizard } from "./useWizard"
-import { REVIEW_STEPS } from "./steps"
-import type { ReactNode } from "react";
-import { locationIdAtom, reviewIdAtom } from "@/data/atoms/review-wizard-atoms"
+import { useEffect } from 'react'
+import { useAtomValue } from 'jotai'
+import { useWizard } from './useWizard'
+import { REVIEW_STEPS } from './steps'
+import type { ReactNode } from 'react'
+import { locationIdAtom, reviewIdAtom } from '@/data/atoms/review-wizard-atoms'
 
 interface StepWrapperProps {
   children: ReactNode
