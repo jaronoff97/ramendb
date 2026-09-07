@@ -1,10 +1,11 @@
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import { MapContainer, Marker, Popup } from 'react-leaflet'
 import { useNavigate } from '@tanstack/react-router'
 import { useSetAtom } from 'jotai';
 import type { ReactNode } from 'react'
 import type { LatLngTuple, MapOptions } from 'leaflet'
 import type { LocationInput } from '@/lib/mutations/useCreateLocation';
 import type { OSMPlace } from '@/hooks/useOverpass';
+import { VectorBasemap } from './VectorBasemap';
 import { useCreateLocation } from '@/lib/mutations/useCreateLocation'
 import { locationIdAtom } from '@/data/atoms/review-wizard-atoms';
 
@@ -65,10 +66,7 @@ export default function LeafletMap({ children, markers = [], selectedMarker = nu
       maxZoom={18}
       {...options}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-      />
+      <VectorBasemap />
 
       {/* Regular markers */}
       {markers.map((m) => (

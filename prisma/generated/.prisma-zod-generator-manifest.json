@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "generatorVersion": "6.19.0",
-  "generatedAt": "2026-09-04T17:24:01.884Z",
+  "generatedAt": "2026-09-07T14:15:47.858Z",
   "outputPath": "/Users/jea/Code/ramendb/prisma/generated",
   "files": [
     "schemas/enums/TransactionIsolationLevel.schema.ts",

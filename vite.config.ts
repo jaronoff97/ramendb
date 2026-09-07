@@ -5,6 +5,8 @@ import viteTsConfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite'
 
 const config = defineConfig({
+  // maplibre creates a module worker, so emit one rather than an IIFE.
+  worker: { format: 'es' },
   server: {
     port: 3000,
     // Listen on every interface, so the dev server is reachable when it runs

@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@faker-js/faker": "^10.0.0",
+    "@maplibre/maplibre-gl-leaflet": "^0.1.4",
     "@prisma/adapter-pg": "^6.19.0",
     "@prisma/client": "^6.19.0",
     "@radix-ui/react-label": "^2.1.8",
@@ -49,6 +50,7 @@
     "jotai": "^2.15.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.544.0",
+    "maplibre-gl": "^6.7.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-leaflet": "^5.0.0-rc.2",
