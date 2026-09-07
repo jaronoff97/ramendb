@@ -1,22 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useMap, useMapEvents } from 'react-leaflet'
-import type { OSMPlace } from '@/hooks/useOverpass'
+import { Search } from 'lucide-react'
+import type { Place } from '@/hooks/usePlaceSearch'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { useOverpassSearch } from '@/hooks/useOverpass'
+import { usePlaceSearch } from '@/hooks/usePlaceSearch'
 import { useDebounce } from '@/hooks/useDebounce'
 
 interface Props {
   center: { lat: number; lon: number }
-  onSelectPlace?: (place: OSMPlace) => void
-  onResults?: (places: Array<OSMPlace>) => void
+  onSelectPlace?: (place: Place) => void
+  onResults?: (places: Array<Place>) => void
 }
 
 /** Overpass gets slow over a huge bounding box, so cap what we ask for. */
@@ -51,16 +45,17 @@ export function FloatingSearchPanel({
   // `moveend` fires after a drag and after a zoom, so one handler covers both.
   useMapEvents({ moveend: syncView })
 
-  const [type, setType] = useState<'restaurant' | 'bar'>('restaurant')
   const [name, setName] = useState('')
   const debouncedName = useDebounce(name, 500)
 
-  const { data, isLoading, isError } = useOverpassSearch(
-    type,
+  const searching = name.trim().length > 1
+  const { data, isLoading, isError, refetch } = usePlaceSearch(
     debouncedName,
     view.center,
     view.radiusMeters,
   )
+
+  const showResults = searching
 
   // Hand the results up so the map can pin them.
   useEffect(() => {
@@ -69,75 +64,86 @@ export function FloatingSearchPanel({
 
   return (
     <div
-      className="absolute top-4 right-4 z-[9999] bg-white shadow-lg rounded-lg p-4 w-80 space-y-3 pointer-events-auto"
+      className="bg-background/95 ring-border pointer-events-auto absolute top-4 right-4 z-[9999] w-80 space-y-3 rounded-xl p-4 shadow-xl ring-1 backdrop-blur"
       onMouseDown={(e) => e.stopPropagation()} // prevent Leaflet capturing clicks
       onClick={(e) => e.stopPropagation()}
       onDoubleClick={(e) => e.stopPropagation()}
     >
-      {/* Type Selector */}
-      <Select value={type} onValueChange={(v: any) => setType(v)}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Select type…" />
-        </SelectTrigger>
-        <SelectContent position="popper" className="z-[10000]">
-          <SelectItem value="restaurant">Restaurants</SelectItem>
-          <SelectItem value="bar">Bars</SelectItem>
-        </SelectContent>
-      </Select>
+      <div>
+        <p className="mb-1.5 text-sm font-medium">Add a place</p>
+        <p className="text-muted-foreground mb-2.5 text-xs leading-relaxed">
+          Search OpenStreetMap for a restaurant that is not on the map yet.
+        </p>
+        <div className="relative">
+          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Search by name…"
+            className="pl-8"
+          />
+        </div>
+      </div>
 
-      {/* Search Input */}
-      <Input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Search by name…"
-      />
-
-      {/* Results */}
-      <div
-        className="max-h-64 overflow-y-auto border rounded-md p-2"
-        onWheel={(e) => e.stopPropagation()}
-        onMouseEnter={() => map.scrollWheelZoom.disable()}
-        onMouseLeave={() => map.scrollWheelZoom.enable()}
-      >
-        {isLoading && (
-          <div className="text-sm text-muted-foreground">Loading…</div>
-        )}
-
-        {isError && (
-          <div className="text-sm text-destructive">
-            OpenStreetMap search is unavailable. Try again in a moment.
-          </div>
-        )}
-
-        {!isLoading &&
-          !isError &&
-          data?.length === 0 &&
-          name.trim().length > 1 && (
-            <div className="text-sm text-muted-foreground">No results</div>
+      {showResults && (
+        <div
+          className="max-h-64 overflow-y-auto rounded-md border p-1"
+          onWheel={(e) => e.stopPropagation()}
+          onMouseEnter={() => map.scrollWheelZoom.disable()}
+          onMouseLeave={() => map.scrollWheelZoom.enable()}
+        >
+          {isLoading && (
+            <div className="text-muted-foreground p-2 text-sm">Searching…</div>
           )}
 
-        <ul className="space-y-2">
-          {data?.map((place) => (
-            <li key={place.id}>
+          {isError && (
+            <div className="space-y-2 p-2">
+              <p className="text-destructive text-sm">
+                Place search did not answer.
+              </p>
               <Button
-                variant="ghost"
-                className="w-full justify-start text-left"
-                onClick={() => {
-                  map.setView([place.lat, place.lon], 17)
-                  onSelectPlace?.(place)
-                }}
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => void refetch()}
               >
-                <div>
-                  <div className="font-medium">{place.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {place.type}
-                  </div>
-                </div>
+                Try again
               </Button>
-            </li>
-          ))}
-        </ul>
-      </div>
+            </div>
+          )}
+
+          {!isLoading &&
+            !isError &&
+            data?.length === 0 &&
+            name.trim().length > 1 && (
+              <div className="text-sm text-muted-foreground">No results</div>
+            )}
+
+          <ul>
+            {data?.map((place) => (
+              <li key={place.id}>
+                <button
+                  type="button"
+                  className="hover:bg-accent w-full rounded-md px-2 py-2 text-left transition-colors"
+                  onClick={() => {
+                    map.setView([place.lat, place.lon], 17)
+                    onSelectPlace?.(place)
+                  }}
+                >
+                  <span className="block text-sm font-medium">
+                    {place.name}
+                  </span>
+                  {place.address && (
+                    <span className="text-muted-foreground block truncate text-xs">
+                      {place.address}
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }

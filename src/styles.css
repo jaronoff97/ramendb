@@ -5,6 +5,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Keep leaflet's stacking under the sticky header, which sits at z-1000. */
 .leaflet-bottom,
 .leaflet-control,
 .leaflet-pane,
@@ -13,12 +14,56 @@
 }
 
 body {
-  @apply m-0;
+  @apply bg-background text-foreground m-0;
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    ui-sans-serif,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Leaflet ships its own popup and control styling. Bring both into the theme
+   so the map does not look like a different product. */
+.leaflet-container {
+  font: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply bg-popover text-popover-foreground rounded-xl shadow-lg;
+  padding: 0;
+}
+
+.leaflet-popup-content {
+  @apply m-0 p-3;
+  width: auto !important;
+}
+
+.leaflet-popup-tip {
+  @apply bg-popover;
+}
+
+.leaflet-popup-close-button {
+  @apply text-muted-foreground hover:text-foreground;
+}
+
+.leaflet-control-zoom a {
+  @apply bg-background text-foreground border-border hover:bg-accent;
+}
+
+.leaflet-control-attribution {
+  @apply bg-background/80 text-muted-foreground rounded-tl-md text-[10px];
+}
+
+/* @tanstack/react-form mounts its own devtools trigger in every build, not
+   just development. We render no devtools in production, so there is nothing
+   to gate in our own code. Hide its host outright. */
+[data-testid='tanstack_devtools'] {
+  display: none !important;
 }
 
 code {

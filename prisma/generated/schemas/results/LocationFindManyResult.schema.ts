@@ -3,6 +3,7 @@ export const LocationFindManyResultSchema = z.object({
   data: z.array(z.object({
   id: z.string(),
   slug: z.string(),
+  osmId: z.string().optional(),
   name: z.string(),
   type: z.string(),
   address: z.string().optional(),

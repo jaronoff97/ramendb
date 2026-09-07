@@ -3,6 +3,7 @@ import * as z from 'zod';
 export const LocationInputSchema = z.object({
     id: z.string(),
     slug: z.string(),
+    osmId: z.string().optional().nullable(),
     name: z.string(),
     type: z.string(),
     address: z.string().optional().nullable(),

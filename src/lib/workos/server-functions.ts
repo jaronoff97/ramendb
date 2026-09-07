@@ -1,7 +1,12 @@
 import { createServerFn } from '@tanstack/react-start'
 import { deleteCookie } from '@tanstack/react-start/server'
 import { getConfig } from './ssr/config'
-import { getAuthorizationUrl as getAuthorizationUrlSync, sessionCookieOptions, terminateSession, withAuth  } from './ssr/session'
+import {
+  getAuthorizationUrl as getAuthorizationUrlSync,
+  sessionCookieOptions,
+  terminateSession,
+  withAuth,
+} from './ssr/session'
 import { getWorkOS } from './ssr/workos'
 import type { GetAuthURLOptions, NoUserInfo, UserInfo } from './ssr/interfaces'
 

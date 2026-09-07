@@ -4,17 +4,11 @@ import { TagCreateManyInputObjectSchema } from 'prisma/generated/schemas'
 import { ownerGate } from '@/lib/authz'
 import {
   listQuerySchema,
-  ratingCreateSchema,
   reviewCreateSchema,
   reviewPicturesPayloadSchema,
   slugify,
 } from '@/lib/types'
-import { bboxFromCenter, escapeOverpassRegex } from '@/hooks/useOverpass'
-import {
-  REVIEW_STEPS,
-  getStepNav,
-  stepOrder,
-} from '@/components/reviews/wizard/steps'
+import { bboxAround } from '@/hooks/usePlaceSearch'
 
 describe('ownerGate', () => {
   it('lets the owner through', () => {
@@ -31,47 +25,16 @@ describe('ownerGate', () => {
   })
 })
 
-describe('escapeOverpassRegex', () => {
-  it('neutralises an attempt to close the quoted regex', () => {
-    const escaped = escapeOverpassRegex('a"]["amenity"="cafe')
-    expect(escaped).not.toMatch(/(^|[^\\])"/)
-    expect(escaped).not.toMatch(/(^|[^\\])\]/)
-  })
-
-  it('neutralises a slow pattern', () => {
-    expect(escapeOverpassRegex('(a+)+$')).toBe('\\(a\\+\\)\\+\\$')
-  })
-
-  it('leaves an ordinary name alone', () => {
-    expect(escapeOverpassRegex('Ramen Ya')).toBe('Ramen Ya')
-  })
-})
-
-describe('bboxFromCenter', () => {
-  it('returns south, west, north, east in that order', () => {
-    const [s, w, n, e] = bboxFromCenter(40.7, -74, 2000).split(',').map(Number)
-    expect(s).toBeLessThan(n)
+describe('bboxAround', () => {
+  it('returns west, south, east, north, the order photon expects', () => {
+    const [w, s, e, n] = bboxAround(40.7, -74, 2000).split(',').map(Number)
     expect(w).toBeLessThan(e)
+    expect(s).toBeLessThan(n)
   })
 
   it('spans roughly twice the requested distance', () => {
-    const [s, , n] = bboxFromCenter(40.7, -74, 2000).split(',').map(Number)
-    const metresPerDegree = 111_320
-    expect((n - s) * metresPerDegree).toBeCloseTo(4000, -2)
-  })
-})
-
-describe('wizard steps', () => {
-  it('skips the create-location step when a location already exists', () => {
-    expect(getStepNav(REVIEW_STEPS.pick).next(true)).toBe(REVIEW_STEPS.review)
-    expect(getStepNav(REVIEW_STEPS.pick).next(false)).toBe(
-      REVIEW_STEPS.location,
-    )
-  })
-
-  it('stops at both ends instead of running off the array', () => {
-    expect(getStepNav(stepOrder[0]).prev()).toBe(stepOrder[0])
-    expect(getStepNav(REVIEW_STEPS.success).next()).toBe(REVIEW_STEPS.success)
+    const [, s, , n] = bboxAround(40.7, -74, 2000).split(',').map(Number)
+    expect((n - s) * 111_320).toBeCloseTo(4000, -2)
   })
 })
 
@@ -143,26 +106,47 @@ describe('create bodies carry no author', () => {
   const locationId = 'cl9ebqhxk00003b600tymydho'
 
   it('a review body has no way to name a user', () => {
-    const forged = { locationId, title: 't', userId: 'someone-else' }
+    const forged = { locationId, title: 't', value: 4, userId: 'someone-else' }
     const parsed = reviewCreateSchema.parse(forged)
     expect(parsed).not.toHaveProperty('userId')
   })
 
-  it('a rating body has no way to name a user', () => {
-    const forged = { locationId, value: 5, userId: 'someone-else' }
-    const parsed = ratingCreateSchema.parse(forged)
-    expect(parsed).not.toHaveProperty('userId')
-  })
-
-  it('holds a rating to 0..5 whole numbers', () => {
-    expect(ratingCreateSchema.safeParse({ locationId, value: 6 }).success).toBe(
+  it('holds a rating to 1..5 whole numbers', () => {
+    const base = { locationId, title: 't' }
+    expect(reviewCreateSchema.safeParse({ ...base, value: 6 }).success).toBe(
       false,
     )
-    expect(
-      ratingCreateSchema.safeParse({ locationId, value: 2.5 }).success,
-    ).toBe(false)
-    expect(ratingCreateSchema.safeParse({ locationId, value: 5 }).success).toBe(
+    expect(reviewCreateSchema.safeParse({ ...base, value: 2.5 }).success).toBe(
+      false,
+    )
+    expect(reviewCreateSchema.safeParse({ ...base, value: 0 }).success).toBe(
+      false,
+    )
+    expect(reviewCreateSchema.safeParse({ ...base, value: 5 }).success).toBe(
       true,
     )
+  })
+
+  it('a review carries its rating and photos in one request', () => {
+    // The wizard used to send three. Abandoning halfway left a scoreless row.
+    const parsed = reviewCreateSchema.safeParse({
+      locationId,
+      title: 'Great tonkotsu',
+      text: 'Rich broth.',
+      value: 5,
+      pictures: ['https://example.com/a.jpg'],
+    })
+    expect(parsed.success).toBe(true)
+  })
+
+  it('refuses more photos than a review should carry', () => {
+    const many = Array.from({ length: 9 }, (_, i) => `https://x.test/${i}.jpg`)
+    const parsed = reviewCreateSchema.safeParse({
+      locationId,
+      title: 't',
+      value: 3,
+      pictures: many,
+    })
+    expect(parsed.success).toBe(false)
   })
 })

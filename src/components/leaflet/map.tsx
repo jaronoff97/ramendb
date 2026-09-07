@@ -1,105 +1,120 @@
 import { MapContainer, Marker, Popup } from 'react-leaflet'
-import { useNavigate } from '@tanstack/react-router'
-import { useSetAtom } from 'jotai'
+import { Link } from '@tanstack/react-router'
 import { VectorBasemap } from './VectorBasemap'
+import { candidateIcon, ratedIcon } from './markers'
 import type { ReactNode } from 'react'
 import type { LatLngTuple, MapOptions } from 'leaflet'
-import type { OSMPlace } from '@/hooks/useOverpass'
-import type { LocationCreateBody } from '@/lib/types'
-import { useCreateLocation } from '@/lib/mutations/useCreateLocation'
-import { locationIdAtom } from '@/data/atoms/review-wizard-atoms'
+import type { Place } from '@/hooks/usePlaceSearch'
+import type { LocationSummary } from '@/lib/queries/useLocations'
+import { Stars } from '@/components/ui/stars'
 import { Button } from '@/components/ui/button'
 
-// Marker type
 export interface MapMarker {
   id: string | number
   position: LatLngTuple
   label?: string
-  data?: OSMPlace
+  data?: Place
 }
 
 interface LeafletMapProps {
   children?: ReactNode
   zoom: number
   center: LatLngTuple
-  markers?: Array<MapMarker>
+  /** Places RamenDB already knows, drawn with their score. */
+  locations?: Array<LocationSummary>
+  /** OpenStreetMap hits from the search box. */
+  candidates?: Array<MapMarker>
   selectedMarker?: MapMarker | null
   onSelectMarker?: (marker: MapMarker) => void
+  onStartReview?: (marker: MapMarker) => void
+  startingReview?: boolean
+  startReviewError?: string | null
 }
 
 export default function LeafletMap({
   children,
-  markers = [],
+  locations = [],
+  candidates = [],
   selectedMarker = null,
   onSelectMarker,
+  onStartReview,
+  startingReview,
+  startReviewError,
   ...options
 }: LeafletMapProps & MapOptions) {
-  const navigate = useNavigate()
-  const createLocation = useCreateLocation()
-  const setLocation = useSetAtom(locationIdAtom)
-
-  const handleStartReview = async (marker: MapMarker) => {
-    const place = marker.data
-    if (!place) return
-
-    // The server derives the slug, so nothing here has to guess at one.
-    const newLocation: LocationCreateBody = {
-      name: place.name,
-      type: place.type || 'restaurant',
-      address: place.address,
-      city: place.city,
-      state: place.state,
-      country: place.country,
-      website: place.website,
-      hours: place.hours,
-      latitude: marker.position[0],
-      longitude: marker.position[1],
-    }
-
-    const created = await createLocation.mutateAsync(newLocation)
-    setLocation(created.id)
-    await navigate({ to: '/reviews/new/review' })
-  }
+  const known = new Set(locations.map((l) => l.osmId ?? '').filter(Boolean))
 
   return (
-    <MapContainer
-      className="h-screen w-full relative"
-      maxZoom={18}
-      {...options}
-    >
+    <MapContainer className="h-full w-full" maxZoom={18} {...options}>
       <VectorBasemap />
 
-      {/* Everything the search found */}
-      {markers.map((m) => (
-        <Marker
-          key={m.id}
-          position={m.position}
-          eventHandlers={{ click: () => onSelectMarker?.(m) }}
-        >
-          {m.label && <Popup>{m.label}</Popup>}
-        </Marker>
-      ))}
+      {/* Places with reviews. This is the point of the site. */}
+      {locations
+        .filter((l) => l.latitude != null && l.longitude != null)
+        .map((location) => (
+          <Marker
+            key={location.id}
+            position={[location.latitude!, location.longitude!]}
+            icon={ratedIcon(location.averageRating)}
+          >
+            <Popup>
+              <div className="min-w-48 space-y-2">
+                <p className="text-sm font-semibold">{location.name}</p>
+                {location.averageRating == null ? (
+                  <p className="text-muted-foreground text-xs">
+                    No ratings yet
+                  </p>
+                ) : (
+                  <div className="flex items-center gap-1.5">
+                    <Stars value={location.averageRating} size="sm" />
+                    <span className="text-muted-foreground text-xs">
+                      {location.reviewCount}{' '}
+                      {location.reviewCount === 1 ? 'review' : 'reviews'}
+                    </span>
+                  </div>
+                )}
+                <Button asChild size="sm" className="w-full">
+                  <Link to="/locations/$slug" params={{ slug: location.slug }}>
+                    See reviews
+                  </Link>
+                </Button>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
 
-      {/* Selected marker */}
+      {/* Search hits that are not in RamenDB yet. */}
+      {candidates
+        .filter((m) => !known.has(String(m.data?.id ?? '')))
+        .map((m) => (
+          <Marker
+            key={m.id}
+            position={m.position}
+            icon={candidateIcon()}
+            eventHandlers={{ click: () => onSelectMarker?.(m) }}
+          >
+            {m.label && <Popup>{m.label}</Popup>}
+          </Marker>
+        ))}
+
       {selectedMarker && (
-        <Marker position={selectedMarker.position}>
+        <Marker position={selectedMarker.position} icon={candidateIcon()}>
           <Popup>
-            <div className="space-y-2">
-              <div className="font-medium">{selectedMarker.label}</div>
-
-              {createLocation.isError && (
-                <p className="text-destructive text-xs">
-                  Could not start the review: {createLocation.error.message}
-                </p>
+            <div className="min-w-52 space-y-2">
+              <p className="text-sm font-semibold">{selectedMarker.label}</p>
+              <p className="text-muted-foreground text-xs">
+                Not in RamenDB yet.
+              </p>
+              {startReviewError && (
+                <p className="text-destructive text-xs">{startReviewError}</p>
               )}
-
               <Button
-                type="button"
                 size="sm"
-                disabled={createLocation.isPending}
-                onClick={() => void handleStartReview(selectedMarker)}
+                className="w-full"
+                disabled={startingReview}
+                onClick={() => onStartReview?.(selectedMarker)}
               >
-                {createLocation.isPending ? 'Starting…' : 'Start Review'}
+                {startingReview ? 'Opening…' : 'Add it and review'}
               </Button>
             </div>
           </Popup>

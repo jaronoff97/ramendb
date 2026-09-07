@@ -6,6 +6,9 @@ import { z } from 'zod'
  * ramen shops share a name all the time.
  */
 export const locationSchema = z.object({
+  // The OpenStreetMap element id, when this came from the map search. The
+  // server reuses an existing row rather than creating a duplicate.
+  osmId: z.string().nullish(),
   name: z.string().min(1),
   type: z.string().min(1),
   address: z.string().nullish(),
@@ -27,9 +30,13 @@ export type LocationCreateBody = z.infer<typeof locationSchema>
  */
 export const reviewCreateSchema = z.object({
   locationId: z.cuid(),
-  title: z.string().min(1),
+  title: z.string().min(1, 'Give your review a title'),
   text: z.string().nullish(),
-  ratingId: z.cuid().nullish(),
+  // The whole review arrives at once and the server writes it in one
+  // transaction. It used to be three requests across five wizard screens, so
+  // abandoning halfway left a review with no score in the database.
+  value: z.number().int().min(1, 'Pick a rating').max(5),
+  pictures: z.array(z.url()).max(8).optional(),
 })
 export type ReviewCreateBody = z.infer<typeof reviewCreateSchema>
 

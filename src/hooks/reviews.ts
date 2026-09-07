@@ -5,10 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import type { z } from 'zod'
-import type {
-  ReviewPureType,
-  ReviewUpdateInputObjectSchema,
-} from 'prisma/generated/schemas'
+import type { ReviewUpdateInputObjectSchema } from 'prisma/generated/schemas'
 import { apiFetch } from '@/lib/api'
 
 export type UpdateReviewInputType = z.input<
@@ -16,13 +13,16 @@ export type UpdateReviewInputType = z.input<
 >
 
 /** Exactly the columns the reviews table renders. */
+/** Exactly the columns a review card renders. */
 export interface ReviewListRow {
   id: string
   title: string | null
+  text: string | null
   createdAt: string
-  user: { name: string | null }
+  user: { name: string | null; pictureUrl: string | null }
   rating: { value: number } | null
-  location: { name: string }
+  location: { name: string; slug: string; city: string | null }
+  pictures: Array<{ url: string }>
 }
 
 export interface ReviewPage {
@@ -30,31 +30,37 @@ export interface ReviewPage {
   nextCursor: string | null
 }
 
+interface ReviewFilters {
+  /** Only the signed-in caller's reviews. Needs a session. */
+  mine?: boolean
+  locationId?: string
+}
+
 /**
- * The list route pages now, so this walks the pages instead of asking for the
- * whole table. `useInfiniteQuery` keeps the loaded pages in one flat array.
+ * The list route pages, so this walks the pages instead of asking for the
+ * whole table.
  */
-export function useReviews() {
+export function useReviews(filters: ReviewFilters = {}) {
   return useInfiniteQuery({
-    queryKey: ['reviews'],
+    queryKey: ['reviews', filters],
     initialPageParam: null as string | null,
     queryFn: ({ pageParam }) => {
       const params = new URLSearchParams()
       if (pageParam) params.set('cursor', pageParam)
+      if (filters.mine) params.set('mine', '1')
+      if (filters.locationId) params.set('locationId', filters.locationId)
       const suffix = params.size > 0 ? `?${params.toString()}` : ''
       return apiFetch<ReviewPage>(`/api/reviews/${suffix}`)
     },
     getNextPageParam: (last) => last.nextCursor,
-    select: (data) => ({
-      reviews: data.pages.flatMap((page) => page.reviews),
-    }),
+    select: (data) => ({ reviews: data.pages.flatMap((p) => p.reviews) }),
   })
 }
 
 export function useReview(id?: string) {
   return useQuery({
     queryKey: ['reviews', id],
-    queryFn: () => apiFetch<ReviewPureType>(`/api/reviews/${id}`),
+    queryFn: () => apiFetch<ReviewListRow>(`/api/reviews/${id}`),
     enabled: !!id,
   })
 }

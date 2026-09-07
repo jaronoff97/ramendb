@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LocationsSlugRouteImport } from './routes/locations/$slug'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as ApiTagsIndexRouteImport } from './routes/api/tags/index'
 import { Route as ApiReviewsIndexRouteImport } from './routes/api/reviews/index'
@@ -29,14 +30,8 @@ import { Route as ApiLocationsIdRouteImport } from './routes/api/locations/$id'
 import { Route as ApiLocationPicturesIdRouteImport } from './routes/api/location-pictures/$id'
 import { Route as ApiDishesIdRouteImport } from './routes/api/dishes/$id'
 import { Route as ApiAuthCallbackRouteImport } from './routes/api/auth/callback'
+import { Route as AuthenticatedReviewsNewRouteImport } from './routes/_authenticated/reviews/new'
 import { Route as AuthenticatedReviewsIdRouteImport } from './routes/_authenticated/reviews/$id'
-import { Route as AuthenticatedReviewsNewRouteRouteImport } from './routes/_authenticated/reviews/new/route'
-import { Route as AuthenticatedReviewsNewIndexRouteImport } from './routes/_authenticated/reviews/new/index'
-import { Route as AuthenticatedReviewsNewSuccessRouteImport } from './routes/_authenticated/reviews/new/success'
-import { Route as AuthenticatedReviewsNewReviewRouteImport } from './routes/_authenticated/reviews/new/review'
-import { Route as AuthenticatedReviewsNewRatingRouteImport } from './routes/_authenticated/reviews/new/rating'
-import { Route as AuthenticatedReviewsNewPicturesRouteImport } from './routes/_authenticated/reviews/new/pictures'
-import { Route as AuthenticatedReviewsNewLocationRouteImport } from './routes/_authenticated/reviews/new/location'
 
 const LogoutRoute = LogoutRouteImport.update({
   id: '/logout',
@@ -50,6 +45,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocationsSlugRoute = LocationsSlugRouteImport.update({
+  id: '/locations/$slug',
+  path: '/locations/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
@@ -139,60 +139,24 @@ const ApiAuthCallbackRoute = ApiAuthCallbackRouteImport.update({
   path: '/api/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedReviewsNewRoute = AuthenticatedReviewsNewRouteImport.update({
+  id: '/reviews/new',
+  path: '/reviews/new',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedReviewsIdRoute = AuthenticatedReviewsIdRouteImport.update({
   id: '/reviews/$id',
   path: '/reviews/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedReviewsNewRouteRoute =
-  AuthenticatedReviewsNewRouteRouteImport.update({
-    id: '/reviews/new',
-    path: '/reviews/new',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedReviewsNewIndexRoute =
-  AuthenticatedReviewsNewIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
-  } as any)
-const AuthenticatedReviewsNewSuccessRoute =
-  AuthenticatedReviewsNewSuccessRouteImport.update({
-    id: '/success',
-    path: '/success',
-    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
-  } as any)
-const AuthenticatedReviewsNewReviewRoute =
-  AuthenticatedReviewsNewReviewRouteImport.update({
-    id: '/review',
-    path: '/review',
-    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
-  } as any)
-const AuthenticatedReviewsNewRatingRoute =
-  AuthenticatedReviewsNewRatingRouteImport.update({
-    id: '/rating',
-    path: '/rating',
-    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
-  } as any)
-const AuthenticatedReviewsNewPicturesRoute =
-  AuthenticatedReviewsNewPicturesRouteImport.update({
-    id: '/pictures',
-    path: '/pictures',
-    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
-  } as any)
-const AuthenticatedReviewsNewLocationRoute =
-  AuthenticatedReviewsNewLocationRouteImport.update({
-    id: '/location',
-    path: '/location',
-    getParentRoute: () => AuthenticatedReviewsNewRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/logout': typeof LogoutRoute
   '/account': typeof AuthenticatedAccountRoute
-  '/reviews/new': typeof AuthenticatedReviewsNewRouteRouteWithChildren
+  '/locations/$slug': typeof LocationsSlugRoute
   '/reviews/$id': typeof AuthenticatedReviewsIdRoute
+  '/reviews/new': typeof AuthenticatedReviewsNewRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/dishes/$id': typeof ApiDishesIdRoute
   '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
@@ -209,18 +173,14 @@ export interface FileRoutesByFullPath {
   '/api/review-pictures': typeof ApiReviewPicturesIndexRoute
   '/api/reviews': typeof ApiReviewsIndexRoute
   '/api/tags': typeof ApiTagsIndexRoute
-  '/reviews/new/location': typeof AuthenticatedReviewsNewLocationRoute
-  '/reviews/new/pictures': typeof AuthenticatedReviewsNewPicturesRoute
-  '/reviews/new/rating': typeof AuthenticatedReviewsNewRatingRoute
-  '/reviews/new/review': typeof AuthenticatedReviewsNewReviewRoute
-  '/reviews/new/success': typeof AuthenticatedReviewsNewSuccessRoute
-  '/reviews/new/': typeof AuthenticatedReviewsNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/logout': typeof LogoutRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/locations/$slug': typeof LocationsSlugRoute
   '/reviews/$id': typeof AuthenticatedReviewsIdRoute
+  '/reviews/new': typeof AuthenticatedReviewsNewRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/dishes/$id': typeof ApiDishesIdRoute
   '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
@@ -237,12 +197,6 @@ export interface FileRoutesByTo {
   '/api/review-pictures': typeof ApiReviewPicturesIndexRoute
   '/api/reviews': typeof ApiReviewsIndexRoute
   '/api/tags': typeof ApiTagsIndexRoute
-  '/reviews/new/location': typeof AuthenticatedReviewsNewLocationRoute
-  '/reviews/new/pictures': typeof AuthenticatedReviewsNewPicturesRoute
-  '/reviews/new/rating': typeof AuthenticatedReviewsNewRatingRoute
-  '/reviews/new/review': typeof AuthenticatedReviewsNewReviewRoute
-  '/reviews/new/success': typeof AuthenticatedReviewsNewSuccessRoute
-  '/reviews/new': typeof AuthenticatedReviewsNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -250,8 +204,9 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/logout': typeof LogoutRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
-  '/_authenticated/reviews/new': typeof AuthenticatedReviewsNewRouteRouteWithChildren
+  '/locations/$slug': typeof LocationsSlugRoute
   '/_authenticated/reviews/$id': typeof AuthenticatedReviewsIdRoute
+  '/_authenticated/reviews/new': typeof AuthenticatedReviewsNewRoute
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/dishes/$id': typeof ApiDishesIdRoute
   '/api/location-pictures/$id': typeof ApiLocationPicturesIdRoute
@@ -268,12 +223,6 @@ export interface FileRoutesById {
   '/api/review-pictures/': typeof ApiReviewPicturesIndexRoute
   '/api/reviews/': typeof ApiReviewsIndexRoute
   '/api/tags/': typeof ApiTagsIndexRoute
-  '/_authenticated/reviews/new/location': typeof AuthenticatedReviewsNewLocationRoute
-  '/_authenticated/reviews/new/pictures': typeof AuthenticatedReviewsNewPicturesRoute
-  '/_authenticated/reviews/new/rating': typeof AuthenticatedReviewsNewRatingRoute
-  '/_authenticated/reviews/new/review': typeof AuthenticatedReviewsNewReviewRoute
-  '/_authenticated/reviews/new/success': typeof AuthenticatedReviewsNewSuccessRoute
-  '/_authenticated/reviews/new/': typeof AuthenticatedReviewsNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -281,8 +230,9 @@ export interface FileRouteTypes {
     | '/'
     | '/logout'
     | '/account'
-    | '/reviews/new'
+    | '/locations/$slug'
     | '/reviews/$id'
+    | '/reviews/new'
     | '/api/auth/callback'
     | '/api/dishes/$id'
     | '/api/location-pictures/$id'
@@ -299,18 +249,14 @@ export interface FileRouteTypes {
     | '/api/review-pictures'
     | '/api/reviews'
     | '/api/tags'
-    | '/reviews/new/location'
-    | '/reviews/new/pictures'
-    | '/reviews/new/rating'
-    | '/reviews/new/review'
-    | '/reviews/new/success'
-    | '/reviews/new/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/logout'
     | '/account'
+    | '/locations/$slug'
     | '/reviews/$id'
+    | '/reviews/new'
     | '/api/auth/callback'
     | '/api/dishes/$id'
     | '/api/location-pictures/$id'
@@ -327,20 +273,15 @@ export interface FileRouteTypes {
     | '/api/review-pictures'
     | '/api/reviews'
     | '/api/tags'
-    | '/reviews/new/location'
-    | '/reviews/new/pictures'
-    | '/reviews/new/rating'
-    | '/reviews/new/review'
-    | '/reviews/new/success'
-    | '/reviews/new'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/logout'
     | '/_authenticated/account'
-    | '/_authenticated/reviews/new'
+    | '/locations/$slug'
     | '/_authenticated/reviews/$id'
+    | '/_authenticated/reviews/new'
     | '/api/auth/callback'
     | '/api/dishes/$id'
     | '/api/location-pictures/$id'
@@ -357,18 +298,13 @@ export interface FileRouteTypes {
     | '/api/review-pictures/'
     | '/api/reviews/'
     | '/api/tags/'
-    | '/_authenticated/reviews/new/location'
-    | '/_authenticated/reviews/new/pictures'
-    | '/_authenticated/reviews/new/rating'
-    | '/_authenticated/reviews/new/review'
-    | '/_authenticated/reviews/new/success'
-    | '/_authenticated/reviews/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LogoutRoute: typeof LogoutRoute
+  LocationsSlugRoute: typeof LocationsSlugRoute
   ApiAuthCallbackRoute: typeof ApiAuthCallbackRoute
   ApiDishesIdRoute: typeof ApiDishesIdRoute
   ApiLocationPicturesIdRoute: typeof ApiLocationPicturesIdRoute
@@ -407,6 +343,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/locations/$slug': {
+      id: '/locations/$slug'
+      path: '/locations/$slug'
+      fullPath: '/locations/$slug'
+      preLoaderRoute: typeof LocationsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/account': {
@@ -528,6 +471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/reviews/new': {
+      id: '/_authenticated/reviews/new'
+      path: '/reviews/new'
+      fullPath: '/reviews/new'
+      preLoaderRoute: typeof AuthenticatedReviewsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/reviews/$id': {
       id: '/_authenticated/reviews/$id'
       path: '/reviews/$id'
@@ -535,94 +485,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReviewsIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/reviews/new': {
-      id: '/_authenticated/reviews/new'
-      path: '/reviews/new'
-      fullPath: '/reviews/new'
-      preLoaderRoute: typeof AuthenticatedReviewsNewRouteRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/reviews/new/': {
-      id: '/_authenticated/reviews/new/'
-      path: '/'
-      fullPath: '/reviews/new/'
-      preLoaderRoute: typeof AuthenticatedReviewsNewIndexRouteImport
-      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
-    }
-    '/_authenticated/reviews/new/success': {
-      id: '/_authenticated/reviews/new/success'
-      path: '/success'
-      fullPath: '/reviews/new/success'
-      preLoaderRoute: typeof AuthenticatedReviewsNewSuccessRouteImport
-      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
-    }
-    '/_authenticated/reviews/new/review': {
-      id: '/_authenticated/reviews/new/review'
-      path: '/review'
-      fullPath: '/reviews/new/review'
-      preLoaderRoute: typeof AuthenticatedReviewsNewReviewRouteImport
-      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
-    }
-    '/_authenticated/reviews/new/rating': {
-      id: '/_authenticated/reviews/new/rating'
-      path: '/rating'
-      fullPath: '/reviews/new/rating'
-      preLoaderRoute: typeof AuthenticatedReviewsNewRatingRouteImport
-      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
-    }
-    '/_authenticated/reviews/new/pictures': {
-      id: '/_authenticated/reviews/new/pictures'
-      path: '/pictures'
-      fullPath: '/reviews/new/pictures'
-      preLoaderRoute: typeof AuthenticatedReviewsNewPicturesRouteImport
-      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
-    }
-    '/_authenticated/reviews/new/location': {
-      id: '/_authenticated/reviews/new/location'
-      path: '/location'
-      fullPath: '/reviews/new/location'
-      preLoaderRoute: typeof AuthenticatedReviewsNewLocationRouteImport
-      parentRoute: typeof AuthenticatedReviewsNewRouteRoute
-    }
   }
 }
-
-interface AuthenticatedReviewsNewRouteRouteChildren {
-  AuthenticatedReviewsNewLocationRoute: typeof AuthenticatedReviewsNewLocationRoute
-  AuthenticatedReviewsNewPicturesRoute: typeof AuthenticatedReviewsNewPicturesRoute
-  AuthenticatedReviewsNewRatingRoute: typeof AuthenticatedReviewsNewRatingRoute
-  AuthenticatedReviewsNewReviewRoute: typeof AuthenticatedReviewsNewReviewRoute
-  AuthenticatedReviewsNewSuccessRoute: typeof AuthenticatedReviewsNewSuccessRoute
-  AuthenticatedReviewsNewIndexRoute: typeof AuthenticatedReviewsNewIndexRoute
-}
-
-const AuthenticatedReviewsNewRouteRouteChildren: AuthenticatedReviewsNewRouteRouteChildren =
-  {
-    AuthenticatedReviewsNewLocationRoute: AuthenticatedReviewsNewLocationRoute,
-    AuthenticatedReviewsNewPicturesRoute: AuthenticatedReviewsNewPicturesRoute,
-    AuthenticatedReviewsNewRatingRoute: AuthenticatedReviewsNewRatingRoute,
-    AuthenticatedReviewsNewReviewRoute: AuthenticatedReviewsNewReviewRoute,
-    AuthenticatedReviewsNewSuccessRoute: AuthenticatedReviewsNewSuccessRoute,
-    AuthenticatedReviewsNewIndexRoute: AuthenticatedReviewsNewIndexRoute,
-  }
-
-const AuthenticatedReviewsNewRouteRouteWithChildren =
-  AuthenticatedReviewsNewRouteRoute._addFileChildren(
-    AuthenticatedReviewsNewRouteRouteChildren,
-  )
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
-  AuthenticatedReviewsNewRouteRoute: typeof AuthenticatedReviewsNewRouteRouteWithChildren
   AuthenticatedReviewsIdRoute: typeof AuthenticatedReviewsIdRoute
+  AuthenticatedReviewsNewRoute: typeof AuthenticatedReviewsNewRoute
   AuthenticatedReviewsIndexRoute: typeof AuthenticatedReviewsIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
-  AuthenticatedReviewsNewRouteRoute:
-    AuthenticatedReviewsNewRouteRouteWithChildren,
   AuthenticatedReviewsIdRoute: AuthenticatedReviewsIdRoute,
+  AuthenticatedReviewsNewRoute: AuthenticatedReviewsNewRoute,
   AuthenticatedReviewsIndexRoute: AuthenticatedReviewsIndexRoute,
 }
 
@@ -634,6 +510,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LogoutRoute: LogoutRoute,
+  LocationsSlugRoute: LocationsSlugRoute,
   ApiAuthCallbackRoute: ApiAuthCallbackRoute,
   ApiDishesIdRoute: ApiDishesIdRoute,
   ApiLocationPicturesIdRoute: ApiLocationPicturesIdRoute,

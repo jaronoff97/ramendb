@@ -1,78 +1,64 @@
-import { createFileRoute } from '@tanstack/react-router'
-import SignInButton from '@/components/workos/signinbutton'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import { LogOut, Mail, UserRound } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Page, PageHeader } from '@/components/ui/page'
 
 export const Route = createFileRoute('/_authenticated/account')({
-  component: AccountComponent,
   // `_authenticated` redirects anyone without a session, so `user` is always
-  // set here. This used to fetch a sign-in URL for a branch that never ran.
+  // set here.
   loader: ({ context }) => ({ user: context.user }),
+  component: AccountComponent,
 })
 
 function AccountComponent() {
   const { user } = Route.useLoaderData()
+  if (!user) return null
 
-  if (user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl p-8 w-full max-w-md border border-gray-700/50">
-          <h1 className="text-2xl font-bold text-white mb-6 text-center">
-            User Profile
-          </h1>
+  const name = [user.firstName, user.lastName].filter(Boolean).join(' ')
 
-          <div className="space-y-6">
-            {/* Profile Picture */}
-            {user.profilePictureUrl && (
-              <div className="flex justify-center">
-                <img
-                  src={user.profilePictureUrl}
-                  alt={`Avatar of ${user.firstName} ${user.lastName}`}
-                  className="w-24 h-24 rounded-full border-4 border-gray-700 shadow-lg"
-                />
-              </div>
+  return (
+    <Page className="max-w-xl">
+      <PageHeader title="Your account" />
+
+      <Card>
+        <CardContent className="space-y-6 pt-6">
+          <div className="flex items-center gap-4">
+            {user.profilePictureUrl ? (
+              <img
+                src={user.profilePictureUrl}
+                alt=""
+                className="ring-border h-16 w-16 rounded-full object-cover ring-1"
+              />
+            ) : (
+              <span className="bg-muted text-muted-foreground flex h-16 w-16 items-center justify-center rounded-full">
+                <UserRound className="h-7 w-7" />
+              </span>
             )}
-
-            {/* User Information */}
-            <div className="space-y-4">
-              <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30">
-                <label className="text-gray-400 text-sm font-medium block mb-1">
-                  First Name
-                </label>
-                <p className="text-white text-lg">{user.firstName || 'N/A'}</p>
-              </div>
-
-              <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30">
-                <label className="text-gray-400 text-sm font-medium block mb-1">
-                  Last Name
-                </label>
-                <p className="text-white text-lg">{user.lastName || 'N/A'}</p>
-              </div>
-
-              <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30">
-                <label className="text-gray-400 text-sm font-medium block mb-1">
-                  Email
-                </label>
-                <p className="text-white text-lg break-all">
-                  {user.email || 'N/A'}
-                </p>
-              </div>
-
-              <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30">
-                <label className="text-gray-400 text-sm font-medium block mb-1">
-                  User ID
-                </label>
-                <p className="text-gray-300 text-sm font-mono break-all">
-                  {user.id || 'N/A'}
-                </p>
-              </div>
+            <div className="min-w-0">
+              <p className="truncate text-lg font-medium">
+                {name || 'Anonymous'}
+              </p>
+              <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
+                <Mail className="h-3.5 w-3.5" />
+                <span className="truncate">{user.email}</span>
+              </p>
             </div>
-
-            {/* Sign Out Button */}
-            <SignInButton user={user} url="" large />
           </div>
-        </div>
-      </div>
-    )
-  }
 
-  return null
+          <div className="flex gap-3 border-t pt-6">
+            <Button asChild variant="outline">
+              <Link to="/reviews">Your reviews</Link>
+            </Button>
+            <Button asChild variant="ghost">
+              <Link to="/logout">
+                <LogOut className="h-4 w-4" />
+                Sign out
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </Page>
+  )
 }

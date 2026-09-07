@@ -17,6 +17,7 @@ const locationwhereinputSchema = z.object({
   NOT: z.union([z.lazy(() => LocationWhereInputObjectSchema), z.lazy(() => LocationWhereInputObjectSchema).array()]).optional(),
   id: z.union([z.lazy(() => StringFilterObjectSchema), z.string()]).optional(),
   slug: z.union([z.lazy(() => StringFilterObjectSchema), z.string()]).optional(),
+  osmId: z.union([z.lazy(() => StringNullableFilterObjectSchema), z.string()]).optional().nullable(),
   name: z.union([z.lazy(() => StringFilterObjectSchema), z.string()]).optional(),
   type: z.union([z.lazy(() => StringFilterObjectSchema), z.string()]).optional(),
   address: z.union([z.lazy(() => StringNullableFilterObjectSchema), z.string()]).optional().nullable(),

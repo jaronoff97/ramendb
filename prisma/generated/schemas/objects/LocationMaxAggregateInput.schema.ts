@@ -5,6 +5,7 @@ import type { Prisma } from '@prisma/client';
 const makeSchema = () => z.object({
   id: z.literal(true).optional(),
   slug: z.literal(true).optional(),
+  osmId: z.literal(true).optional(),
   name: z.literal(true).optional(),
   type: z.literal(true).optional(),
   address: z.literal(true).optional(),

@@ -12,6 +12,7 @@ import { LocationScalarFieldEnumSchema } from './enums/LocationScalarFieldEnum.s
 export const LocationFindFirstSelectSchema: z.ZodType<Prisma.LocationSelect> = z.object({
     id: z.boolean().optional(),
     slug: z.boolean().optional(),
+    osmId: z.boolean().optional(),
     name: z.boolean().optional(),
     type: z.boolean().optional(),
     address: z.boolean().optional(),
@@ -35,6 +36,7 @@ export const LocationFindFirstSelectSchema: z.ZodType<Prisma.LocationSelect> = z
 export const LocationFindFirstSelectZodSchema = z.object({
     id: z.boolean().optional(),
     slug: z.boolean().optional(),
+    osmId: z.boolean().optional(),
     name: z.boolean().optional(),
     type: z.boolean().optional(),
     address: z.boolean().optional(),

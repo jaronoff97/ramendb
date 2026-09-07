@@ -11,6 +11,7 @@ import { LocationPictureOrderByRelationAggregateInputObjectSchema as LocationPic
 const makeSchema = () => z.object({
   id: SortOrderSchema.optional(),
   slug: SortOrderSchema.optional(),
+  osmId: z.union([SortOrderSchema, z.lazy(() => SortOrderInputObjectSchema)]).optional(),
   name: SortOrderSchema.optional(),
   type: SortOrderSchema.optional(),
   address: z.union([SortOrderSchema, z.lazy(() => SortOrderInputObjectSchema)]).optional(),

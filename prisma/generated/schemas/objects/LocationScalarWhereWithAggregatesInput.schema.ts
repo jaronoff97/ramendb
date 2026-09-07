@@ -12,6 +12,7 @@ const locationscalarwherewithaggregatesinputSchema = z.object({
   NOT: z.union([z.lazy(() => LocationScalarWhereWithAggregatesInputObjectSchema), z.lazy(() => LocationScalarWhereWithAggregatesInputObjectSchema).array()]).optional(),
   id: z.union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string()]).optional(),
   slug: z.union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string()]).optional(),
+  osmId: z.union([z.lazy(() => StringNullableWithAggregatesFilterObjectSchema), z.string()]).optional().nullable(),
   name: z.union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string()]).optional(),
   type: z.union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string()]).optional(),
   address: z.union([z.lazy(() => StringNullableWithAggregatesFilterObjectSchema), z.string()]).optional().nullable(),

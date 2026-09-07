@@ -37,6 +37,10 @@ model User {
 model Location {
   id        String   @id @default(cuid())
   slug      String   @unique
+  // The OpenStreetMap element this came from, when the map search created it.
+  // Unique, so a second "Start Review" on the same pin reuses the row instead
+  // of adding ramen-ya-2.
+  osmId     String?  @unique
   name      String
   type      String // e.g. "restaurant", "cocktail_bar"
   address   String?

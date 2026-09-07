@@ -2,6 +2,7 @@ import * as z from 'zod';
 export const LocationCreateResultSchema = z.object({
   id: z.string(),
   slug: z.string(),
+  osmId: z.string().optional(),
   name: z.string(),
   type: z.string(),
   address: z.string().optional(),

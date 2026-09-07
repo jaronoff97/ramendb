@@ -2,6 +2,7 @@ import * as z from 'zod';
 export const LocationAggregateResultSchema = z.object({  _count: z.object({
     id: z.number(),
     slug: z.number(),
+    osmId: z.number(),
     name: z.number(),
     type: z.number(),
     address: z.number(),
@@ -31,6 +32,7 @@ export const LocationAggregateResultSchema = z.object({  _count: z.object({
   _min: z.object({
     id: z.string().nullable(),
     slug: z.string().nullable(),
+    osmId: z.string().nullable(),
     name: z.string().nullable(),
     type: z.string().nullable(),
     address: z.string().nullable(),
@@ -46,6 +48,7 @@ export const LocationAggregateResultSchema = z.object({  _count: z.object({
   _max: z.object({
     id: z.string().nullable(),
     slug: z.string().nullable(),
+    osmId: z.string().nullable(),
     name: z.string().nullable(),
     type: z.string().nullable(),
     address: z.string().nullable(),

@@ -1,10 +1,19 @@
 import { Link } from '@tanstack/react-router'
-
-import { useState } from 'react'
-import { AppWindow, Home, Menu, X } from 'lucide-react'
-import SignInButton from './workos/signinbutton.tsx'
+import { Map, PenLine, UserRound } from 'lucide-react'
 import type { User } from '@workos-inc/node'
+import { Button } from '@/components/ui/button'
 
+const NAV = [
+  { to: '/', label: 'Map', icon: Map },
+  { to: '/reviews', label: 'Reviews', icon: PenLine },
+] as const
+
+/**
+ * One bar, links inline.
+ *
+ * Two links behind a hamburger drawer hid the whole product. One of them said
+ * "Posts".
+ */
 export default function Header({
   user,
   signInUrl,
@@ -12,76 +21,63 @@ export default function Header({
   user: User | null
   signInUrl: string
 }) {
-  const [isOpen, setIsOpen] = useState(false)
-  // const [groupedExpanded, setGroupedExpanded] = useState<
-  //   Record<string, boolean>
-  // >({})
-
   return (
-    <>
-      <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu size={24} />
-        </button>
-        <h1 className="ml-4 text-xl font-semibold">
-          <Link to="/">
-            <img src="/ramendb-logo.svg" alt="RamenDB Logo" className="h-10" />
-          </Link>
-        </h1>
-      </header>
+    <header className="bg-background/85 supports-[backdrop-filter]:bg-background/70 sticky top-0 z-[1000] w-full border-b backdrop-blur">
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-4 sm:px-6">
+        <Link to="/" className="flex shrink-0 items-center gap-2">
+          <img src="/ramendb-logo.svg" alt="RamenDB" className="h-7" />
+        </Link>
 
-      <aside
-        className={`fixed top-0 left-0 h-full w-80 bg-gray-900 text-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold">Navigation</h2>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-            aria-label="Close menu"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        <nav className="flex-1 p-4 overflow-y-auto">
-          <Link
-            to="/"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
-            activeProps={{
-              className:
-                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
-            }}
-          >
-            <Home size={20} />
-            <span className="font-medium">Home</span>
-          </Link>
-
-          <Link
-            to="/reviews"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
-            activeProps={{
-              className:
-                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
-            }}
-          >
-            <AppWindow size={20} />
-            <span className="font-medium">Posts</span>
-          </Link>
+        <nav className="flex items-center gap-1">
+          {NAV.map(({ to, label, icon: Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              className="text-muted-foreground hover:bg-accent hover:text-foreground inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+              activeProps={{ className: 'bg-accent text-foreground' }}
+              activeOptions={{ exact: to === '/' }}
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </Link>
+          ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-700 bg-gray-800 flex flex-col gap-2">
-          <SignInButton user={user} url={signInUrl} large />
+        <div className="ml-auto flex items-center gap-2">
+          {user ? (
+            <>
+              <Button asChild size="sm">
+                <Link to="/reviews/new">
+                  <PenLine className="h-4 w-4" />
+                  <span className="hidden sm:inline">Write a review</span>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                aria-label="Your account"
+              >
+                <Link to="/account">
+                  {user.profilePictureUrl ? (
+                    <img
+                      src={user.profilePictureUrl}
+                      alt=""
+                      className="h-6 w-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <UserRound className="h-4 w-4" />
+                  )}
+                </Link>
+              </Button>
+            </>
+          ) : (
+            <Button asChild size="sm">
+              <a href={signInUrl}>Sign in</a>
+            </Button>
+          )}
         </div>
-      </aside>
-    </>
+      </div>
+    </header>
   )
 }

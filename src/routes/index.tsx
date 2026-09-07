@@ -18,7 +18,7 @@ const NEW_YORK: LatLngTuple = [40.71817, -73.99294]
 function MapSkeleton() {
   return (
     <div
-      className="h-screen w-full bg-muted animate-pulse"
+      className="bg-muted h-full w-full animate-pulse"
       role="status"
       aria-label="Loading the map"
     />
@@ -26,11 +26,15 @@ function MapSkeleton() {
 }
 
 function App() {
+  const { user, signInUrl } = Route.useRouteContext()
+
   return (
-    <ClientOnly fallback={<MapSkeleton />}>
-      <Suspense fallback={<MapSkeleton />}>
-        <MapView center={NEW_YORK} />
-      </Suspense>
-    </ClientOnly>
+    <div className="h-[calc(100vh-3.5rem)] w-full">
+      <ClientOnly fallback={<MapSkeleton />}>
+        <Suspense fallback={<MapSkeleton />}>
+          <MapView center={NEW_YORK} signedIn={!!user} signInUrl={signInUrl} />
+        </Suspense>
+      </ClientOnly>
+    </div>
   )
 }
