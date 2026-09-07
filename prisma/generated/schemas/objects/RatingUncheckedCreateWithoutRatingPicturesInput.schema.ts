@@ -7,7 +7,7 @@ const makeSchema = () => z.object({
   id: z.string().optional(),
   locationId: z.string(),
   userId: z.string(),
-  value: z.number().int().optional(),
+  value: z.number().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   reviews: z.lazy(() => ReviewUncheckedCreateNestedManyWithoutRatingInputObjectSchema).optional(),

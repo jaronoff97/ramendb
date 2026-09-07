@@ -105,7 +105,10 @@ model Rating {
   id         String   @id @default(cuid())
   locationId String
   userId     String
-  value      Int      @default(0) // 0..5
+  // Half stars, so 0.5 to 5.0 in steps of 0.5. A float, not a decimal: every
+  // half step is exact in binary floating point, so there is nothing to round.
+  // A check constraint in the migration holds the domain.
+  value      Float    @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

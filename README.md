@@ -48,8 +48,21 @@ Run `task` on its own to list every task.
 they are not secrets, and Vite bakes them in at build time. The rest stay on
 the server.
 
-The map needs no key. OpenFreeMap serves the tiles with no signup and no
-request cap.
+The map needs no key. OpenFreeMap serves the tiles, and Photon answers the
+place search. Neither asks for a signup.
+
+### Review photos
+
+Set `GCS_BUCKET` to turn on image uploads. There is no credential to set: on
+Cloud Run the service account arrives through the metadata server and signs
+upload URLs through the IAM credentials API. Terraform grants the one role
+that needs, `roles/iam.serviceAccountTokenCreator` on itself.
+
+Leave `GCS_BUCKET` unset and the review form asks for an image URL instead,
+which is what a local run does.
+
+Only a signed-in user can get an upload URL, the server picks the object name,
+and the bucket only accepts the image types we can name an extension for.
 
 ## Layout
 

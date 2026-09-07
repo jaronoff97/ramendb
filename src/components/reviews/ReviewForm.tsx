@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { StarInput } from '@/components/ui/stars'
 import { useCreateReview } from '@/lib/mutations/useCreateReview'
+import { useUploadImage, useUploadStatus } from '@/lib/mutations/useUploadImage'
 
 const pictureUrl = z.url('Enter a full image URL, starting with https://')
 
@@ -22,6 +23,9 @@ const pictureUrl = z.url('Enter a full image URL, starting with https://')
 export function ReviewForm({ location }: { location: LocationSummary }) {
   const navigate = useNavigate()
   const createReview = useCreateReview()
+  const upload = useUploadImage()
+  const { data: uploadStatus } = useUploadStatus()
+  const canUpload = uploadStatus?.enabled ?? false
 
   const [value, setValue] = useState(0)
   const [title, setTitle] = useState('')
@@ -56,7 +60,7 @@ export function ReviewForm({ location }: { location: LocationSummary }) {
       title: title.trim(),
       text: text.trim() || null,
       value,
-      pictures,
+      pictures: pictures.filter(Boolean),
     })
     await navigate({ to: '/locations/$slug', params: { slug: location.slug } })
   }
@@ -65,6 +69,9 @@ export function ReviewForm({ location }: { location: LocationSummary }) {
     <form onSubmit={submit} className="space-y-8">
       <fieldset className="space-y-2">
         <Label className="text-base">How was it?</Label>
+        <p className="text-muted-foreground text-xs">
+          Click the left of a star for a half.
+        </p>
         <StarInput
           value={value}
           onChange={setValue}
@@ -106,36 +113,89 @@ export function ReviewForm({ location }: { location: LocationSummary }) {
         <Label htmlFor="picture">
           Photos <span className="text-muted-foreground">(optional)</span>
         </Label>
-        <div className="flex gap-2">
-          <Input
-            id="picture"
-            type="url"
-            placeholder="https://example.com/ramen.jpg"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                addPicture()
-              }
-            }}
-          />
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={addPicture}
-            disabled={draft.trim() === '' || pictures.length >= 8}
-          >
-            <ImagePlus className="h-4 w-4" />
-            Add
-          </Button>
-        </div>
+
+        {canUpload ? (
+          <div className="space-y-2">
+            <label
+              htmlFor="picture"
+              className="border-border hover:border-primary/50 hover:bg-accent/40 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-6 text-sm transition-colors"
+            >
+              {upload.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Uploading…
+                </>
+              ) : (
+                <>
+                  <ImagePlus className="text-muted-foreground h-4 w-4" />
+                  Choose a photo
+                </>
+              )}
+            </label>
+            <input
+              id="picture"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+              className="sr-only"
+              disabled={upload.isPending || pictures.length >= 8}
+              onChange={async (e) => {
+                const file = e.target.files?.[0]
+                e.target.value = ''
+                if (!file) return
+                setPictureError(null)
+                if (file.size > (uploadStatus?.maxBytes ?? 0)) {
+                  setPictureError('That image is larger than 5 MB.')
+                  return
+                }
+                try {
+                  setPictures((current) => [...current, ''])
+                  const url = await upload.mutateAsync(file)
+                  setPictures((current) => [...current.filter(Boolean), url])
+                } catch (error) {
+                  setPictures((current) => current.filter(Boolean))
+                  setPictureError(
+                    error instanceof Error ? error.message : 'Upload failed',
+                  )
+                }
+              }}
+            />
+            <p className="text-muted-foreground text-xs">
+              Up to 8 photos, 5 MB each.
+            </p>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <Input
+              id="picture"
+              type="url"
+              placeholder="https://example.com/ramen.jpg"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  addPicture()
+                }
+              }}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={addPicture}
+              disabled={draft.trim() === '' || pictures.length >= 8}
+            >
+              <ImagePlus className="h-4 w-4" />
+              Add
+            </Button>
+          </div>
+        )}
+
         {pictureError && (
           <p className="text-destructive text-sm">{pictureError}</p>
         )}
-        {pictures.length > 0 && (
+        {pictures.filter(Boolean).length > 0 && (
           <ul className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
-            {pictures.map((url, i) => (
+            {pictures.filter(Boolean).map((url, i) => (
               <li key={url} className="group relative">
                 <img
                   src={url}

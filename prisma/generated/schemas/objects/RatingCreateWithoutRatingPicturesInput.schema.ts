@@ -7,7 +7,7 @@ import { RatingTagCreateNestedManyWithoutRatingInputObjectSchema as RatingTagCre
 
 const makeSchema = () => z.object({
   id: z.string().optional(),
-  value: z.number().int().optional(),
+  value: z.number().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   location: z.lazy(() => LocationCreateNestedOneWithoutRatingsInputObjectSchema),

@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import type { Prisma } from '@prisma/client';
 import { StringFilterObjectSchema as StringFilterObjectSchema } from './StringFilter.schema';
-import { IntFilterObjectSchema as IntFilterObjectSchema } from './IntFilter.schema';
+import { FloatFilterObjectSchema as FloatFilterObjectSchema } from './FloatFilter.schema';
 import { DateTimeFilterObjectSchema as DateTimeFilterObjectSchema } from './DateTimeFilter.schema'
 
 const ratingscalarwhereinputSchema = z.object({
@@ -11,7 +11,7 @@ const ratingscalarwhereinputSchema = z.object({
   id: z.union([z.lazy(() => StringFilterObjectSchema), z.string()]).optional(),
   locationId: z.union([z.lazy(() => StringFilterObjectSchema), z.string()]).optional(),
   userId: z.union([z.lazy(() => StringFilterObjectSchema), z.string()]).optional(),
-  value: z.union([z.lazy(() => IntFilterObjectSchema), z.number().int()]).optional(),
+  value: z.union([z.lazy(() => FloatFilterObjectSchema), z.number()]).optional(),
   createdAt: z.union([z.lazy(() => DateTimeFilterObjectSchema), z.coerce.date()]).optional(),
   updatedAt: z.union([z.lazy(() => DateTimeFilterObjectSchema), z.coerce.date()]).optional()
 }).strict();

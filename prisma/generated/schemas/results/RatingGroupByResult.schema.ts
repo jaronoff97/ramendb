@@ -3,7 +3,7 @@ export const RatingGroupByResultSchema = z.array(z.object({
   id: z.string(),
   locationId: z.string(),
   userId: z.string(),
-  value: z.number().int(),
+  value: z.number(),
   createdAt: z.date(),
   updatedAt: z.date(),
   _count: z.object({
@@ -29,7 +29,7 @@ export const RatingGroupByResultSchema = z.array(z.object({
     id: z.string().nullable(),
     locationId: z.string().nullable(),
     userId: z.string().nullable(),
-    value: z.number().int().nullable(),
+    value: z.number().nullable(),
     createdAt: z.date().nullable(),
     updatedAt: z.date().nullable()
   }).nullable().optional(),
@@ -37,7 +37,7 @@ export const RatingGroupByResultSchema = z.array(z.object({
     id: z.string().nullable(),
     locationId: z.string().nullable(),
     userId: z.string().nullable(),
-    value: z.number().int().nullable(),
+    value: z.number().nullable(),
     createdAt: z.date().nullable(),
     updatedAt: z.date().nullable()
   }).nullable().optional()

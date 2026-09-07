@@ -9,6 +9,7 @@ import {
   slugify,
 } from '@/lib/types'
 import { bboxAround } from '@/hooks/usePlaceSearch'
+import { toHalf } from '@/components/ui/stars'
 
 describe('ownerGate', () => {
   it('lets the owner through', () => {
@@ -111,20 +112,19 @@ describe('create bodies carry no author', () => {
     expect(parsed).not.toHaveProperty('userId')
   })
 
-  it('holds a rating to 1..5 whole numbers', () => {
+  it('takes half stars and refuses anything finer', () => {
     const base = { locationId, title: 't' }
-    expect(reviewCreateSchema.safeParse({ ...base, value: 6 }).success).toBe(
-      false,
-    )
-    expect(reviewCreateSchema.safeParse({ ...base, value: 2.5 }).success).toBe(
-      false,
-    )
-    expect(reviewCreateSchema.safeParse({ ...base, value: 0 }).success).toBe(
-      false,
-    )
-    expect(reviewCreateSchema.safeParse({ ...base, value: 5 }).success).toBe(
-      true,
-    )
+    const ok = (value: number) =>
+      reviewCreateSchema.safeParse({ ...base, value }).success
+
+    // Every half step the check constraint on Rating.value allows.
+    for (const value of [0.5, 1, 1.5, 2.5, 4.5, 5]) {
+      expect(ok(value)).toBe(true)
+    }
+    // Finer than a half, out of range, or nothing picked at all.
+    for (const value of [0, 0.25, 3.7, 5.5, 6, -1]) {
+      expect(ok(value)).toBe(false)
+    }
   })
 
   it('a review carries its rating and photos in one request', () => {
@@ -148,5 +148,52 @@ describe('create bodies carry no author', () => {
       pictures: many,
     })
     expect(parsed.success).toBe(false)
+  })
+})
+
+describe('toHalf', () => {
+  it('snaps an average to the half star we can draw', () => {
+    expect(toHalf(4.4)).toBe(4.5)
+    expect(toHalf(4.2)).toBe(4)
+    expect(toHalf(3.75)).toBe(4)
+    expect(toHalf(3.5)).toBe(3.5)
+  })
+
+  it('leaves an exact half alone', () => {
+    for (const value of [0.5, 2.5, 5]) expect(toHalf(value)).toBe(value)
+  })
+})
+
+describe('upload rules', () => {
+  it('accepts only image types we can name a file extension for', async () => {
+    const { isAllowedImageType } = await import('@/lib/uploads')
+    for (const t of ['image/jpeg', 'image/png', 'image/webp', 'image/avif']) {
+      expect(isAllowedImageType(t)).toBe(true)
+    }
+    // svg carries script, so it is not an image we will host.
+    for (const t of ['image/svg+xml', 'text/html', 'application/pdf', '']) {
+      expect(isAllowedImageType(t)).toBe(false)
+    }
+  })
+
+  it('puts every object under the uploader, with a name they did not choose', async () => {
+    const { objectNameFor } = await import('@/lib/uploads')
+    const a = objectNameFor('user_1', 'image/jpeg')
+    const b = objectNameFor('user_1', 'image/jpeg')
+    expect(a).toMatch(/^reviews\/user_1\/[0-9a-f-]{36}\.jpg$/)
+    // Two uploads never collide, so nobody overwrites anybody.
+    expect(a).not.toBe(b)
+  })
+
+  it('names the file after the declared type, not the caller', async () => {
+    const { objectNameFor } = await import('@/lib/uploads')
+    expect(objectNameFor('u', 'image/webp').endsWith('.webp')).toBe(true)
+    expect(objectNameFor('u', 'image/png').endsWith('.png')).toBe(true)
+  })
+
+  it('takes any image url when no bucket is configured', async () => {
+    const { isOwnedImageUrl } = await import('@/lib/uploads')
+    // Local runs have no GCS_BUCKET, and the form falls back to a URL field.
+    expect(isOwnedImageUrl('https://example.com/a.jpg')).toBe(true)
   })
 })

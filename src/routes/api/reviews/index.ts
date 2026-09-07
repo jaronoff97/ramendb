@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { authMiddleware } from '@/lib/middlewares/require-auth'
 import { withAuth } from '@/lib/workos/ssr/session'
 import { listQuerySchema, reviewCreateSchema } from '@/lib/types'
+import { isOwnedImageUrl } from '@/lib/uploads'
 
 /** Exactly the columns a review card renders. */
 const listSelect = {
@@ -82,6 +83,15 @@ export const Route = createFileRoute('/api/reviews/')({
             }
             const { locationId, title, text, value, pictures = [] } = data.data
             const userId = context.userId
+
+            // With storage configured, a picture must be one we hold. Without
+            // this the upload route would be decoration and any URL would do.
+            if (!pictures.every(isOwnedImageUrl)) {
+              return Response.json(
+                { message: 'Pictures must be uploaded through RamenDB.' },
+                { status: 400 },
+              )
+            }
 
             // One transaction. The wizard used to write the review, then the
             // pictures, then the rating, so abandoning halfway left a review

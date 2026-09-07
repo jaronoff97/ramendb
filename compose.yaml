@@ -28,7 +28,11 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-ramendb} -d ${POSTGRES_DB:-ramendb}']
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-ramendb} -d ${POSTGRES_DB:-ramendb}',
+        ]
       interval: 2s
       timeout: 3s
       retries: 30
@@ -60,6 +64,9 @@ services:
     environment:
       <<: *db-url
       NODE_ENV: production
+      # Optional. Unset means the review form asks for an image URL instead.
+      GCS_BUCKET: ${GCS_BUCKET:-}
+      GCS_PUBLIC_BASE_URL: ${GCS_PUBLIC_BASE_URL:-}
     env_file:
       - path: .env.local
         required: false

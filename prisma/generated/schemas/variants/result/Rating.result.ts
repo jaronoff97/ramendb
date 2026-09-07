@@ -4,7 +4,7 @@ export const RatingResultSchema = z.object({
     id: z.string(),
     locationId: z.string(),
     userId: z.string(),
-    value: z.number().int(),
+    value: z.number(),
     createdAt: z.date(),
     updatedAt: z.date(),
     location: z.unknown(),

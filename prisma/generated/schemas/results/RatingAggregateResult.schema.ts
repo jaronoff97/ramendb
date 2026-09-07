@@ -22,7 +22,7 @@ export const RatingAggregateResultSchema = z.object({  _count: z.object({
     id: z.string().nullable(),
     locationId: z.string().nullable(),
     userId: z.string().nullable(),
-    value: z.number().int().nullable(),
+    value: z.number().nullable(),
     createdAt: z.date().nullable(),
     updatedAt: z.date().nullable()
   }).nullable().optional(),
@@ -30,7 +30,7 @@ export const RatingAggregateResultSchema = z.object({  _count: z.object({
     id: z.string().nullable(),
     locationId: z.string().nullable(),
     userId: z.string().nullable(),
-    value: z.number().int().nullable(),
+    value: z.number().nullable(),
     createdAt: z.date().nullable(),
     updatedAt: z.date().nullable()
   }).nullable().optional()});

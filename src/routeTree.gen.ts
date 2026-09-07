@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LocationsSlugRouteImport } from './routes/locations/$slug'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as ApiUploadsIndexRouteImport } from './routes/api/uploads/index'
 import { Route as ApiTagsIndexRouteImport } from './routes/api/tags/index'
 import { Route as ApiReviewsIndexRouteImport } from './routes/api/reviews/index'
 import { Route as ApiReviewPicturesIndexRouteImport } from './routes/api/review-pictures/index'
@@ -56,6 +57,11 @@ const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
   path: '/account',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const ApiUploadsIndexRoute = ApiUploadsIndexRouteImport.update({
+  id: '/api/uploads/',
+  path: '/api/uploads/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTagsIndexRoute = ApiTagsIndexRouteImport.update({
   id: '/api/tags/',
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/api/review-pictures': typeof ApiReviewPicturesIndexRoute
   '/api/reviews': typeof ApiReviewsIndexRoute
   '/api/tags': typeof ApiTagsIndexRoute
+  '/api/uploads': typeof ApiUploadsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByTo {
   '/api/review-pictures': typeof ApiReviewPicturesIndexRoute
   '/api/reviews': typeof ApiReviewsIndexRoute
   '/api/tags': typeof ApiTagsIndexRoute
+  '/api/uploads': typeof ApiUploadsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -223,6 +231,7 @@ export interface FileRoutesById {
   '/api/review-pictures/': typeof ApiReviewPicturesIndexRoute
   '/api/reviews/': typeof ApiReviewsIndexRoute
   '/api/tags/': typeof ApiTagsIndexRoute
+  '/api/uploads/': typeof ApiUploadsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
     | '/api/review-pictures'
     | '/api/reviews'
     | '/api/tags'
+    | '/api/uploads'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -273,6 +283,7 @@ export interface FileRouteTypes {
     | '/api/review-pictures'
     | '/api/reviews'
     | '/api/tags'
+    | '/api/uploads'
   id:
     | '__root__'
     | '/'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/api/review-pictures/'
     | '/api/reviews/'
     | '/api/tags/'
+    | '/api/uploads/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -320,6 +332,7 @@ export interface RootRouteChildren {
   ApiReviewPicturesIndexRoute: typeof ApiReviewPicturesIndexRoute
   ApiReviewsIndexRoute: typeof ApiReviewsIndexRoute
   ApiTagsIndexRoute: typeof ApiTagsIndexRoute
+  ApiUploadsIndexRoute: typeof ApiUploadsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/account'
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/uploads/': {
+      id: '/api/uploads/'
+      path: '/api/uploads'
+      fullPath: '/api/uploads'
+      preLoaderRoute: typeof ApiUploadsIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/tags/': {
       id: '/api/tags/'
@@ -526,6 +546,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiReviewPicturesIndexRoute: ApiReviewPicturesIndexRoute,
   ApiReviewsIndexRoute: ApiReviewsIndexRoute,
   ApiTagsIndexRoute: ApiTagsIndexRoute,
+  ApiUploadsIndexRoute: ApiUploadsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

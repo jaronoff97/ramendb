@@ -35,7 +35,13 @@ export const reviewCreateSchema = z.object({
   // The whole review arrives at once and the server writes it in one
   // transaction. It used to be three requests across five wizard screens, so
   // abandoning halfway left a review with no score in the database.
-  value: z.number().int().min(1, 'Pick a rating').max(5),
+  //
+  // Half stars, matching the check constraint on Rating.value.
+  value: z
+    .number()
+    .min(0.5, 'Pick a rating')
+    .max(5)
+    .multipleOf(0.5, 'Ratings go in half stars'),
   pictures: z.array(z.url()).max(8).optional(),
 })
 export type ReviewCreateBody = z.infer<typeof reviewCreateSchema>
