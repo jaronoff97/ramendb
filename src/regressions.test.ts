@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import * as z from 'zod'
 import { TagCreateManyInputObjectSchema } from 'prisma/generated/schemas'
 import { ownerGate } from '@/lib/authz'
@@ -195,5 +195,37 @@ describe('upload rules', () => {
     const { isOwnedImageUrl } = await import('@/lib/uploads')
     // Local runs have no GCS_BUCKET, and the form falls back to a URL field.
     expect(isOwnedImageUrl('https://example.com/a.jpg')).toBe(true)
+  })
+
+  // The request carries a size the caller chose, so it caps nothing. Only the
+  // signed x-goog-content-length-range does. GCS compares the header the
+  // browser sends against the one in the signature, so if these two ever
+  // disagree every upload fails.
+  it('signs the same size range that it tells the browser to send', async () => {
+    const getSignedUrl = vi.fn().mockResolvedValue(['https://signed.test/put'])
+    vi.doMock('@google-cloud/storage', () => ({
+      Storage: class {
+        bucket() {
+          return { file: () => ({ getSignedUrl }) }
+        }
+      },
+    }))
+    vi.stubEnv('GCS_BUCKET', 'test-bucket')
+    // Earlier tests already imported the module, so the mock only lands if we
+    // drop it from the registry first.
+    vi.resetModules()
+
+    const { createUploadSlot, MAX_UPLOAD_BYTES } = await import('@/lib/uploads')
+    const slot = await createUploadSlot('user_1', 'image/jpeg')
+
+    const signed = getSignedUrl.mock.calls[0][0].extensionHeaders
+    expect(signed['x-goog-content-length-range']).toBe(`0,${MAX_UPLOAD_BYTES}`)
+    expect(slot?.headers['x-goog-content-length-range']).toBe(
+      signed['x-goog-content-length-range'],
+    )
+
+    vi.unstubAllEnvs()
+    vi.doUnmock('@google-cloud/storage')
+    vi.resetModules()
   })
 })

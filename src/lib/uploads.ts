@@ -73,10 +73,23 @@ export function objectNameFor(userId: string, contentType: string) {
 }
 
 /**
+ * The size range GCS will accept for one upload.
+ *
+ * This is the only thing that actually caps an upload. The `size` field on the
+ * request is a number the browser chose, so a caller can understate it and
+ * then send anything. Signing the range makes GCS reject the bytes itself.
+ */
+const CONTENT_LENGTH_RANGE = `0,${MAX_UPLOAD_BYTES}`
+
+/**
  * A one-shot upload slot for one image.
  *
  * The object name comes from here, never from the browser, so nobody chooses
  * where their bytes land or overwrites somebody else's photo.
+ *
+ * `headers` is not advice. Every one of them is part of the signature, so the
+ * browser has to send exactly these and nothing else. They travel with the URL
+ * so the two sides cannot drift apart.
  */
 export async function createUploadSlot(userId: string, contentType: string) {
   const config = readUploadConfig()
@@ -99,6 +112,10 @@ export async function createUploadSlot(userId: string, contentType: string) {
   return {
     uploadUrl,
     publicUrl: `${config.publicBaseUrl.replace(/\/$/, '')}/${name}`,
+    headers: {
+      'Content-Type': contentType,
+      'x-goog-content-length-range': CONTENT_LENGTH_RANGE,
+    },
   }
 }
 
@@ -113,6 +130,11 @@ function signWrite(bucket: string, name: string, contentType: string) {
       // Signed into the URL, so the browser cannot upload something else
       // under a name that claims to be a jpeg.
       contentType,
+      // GCS rejects a body outside this range. Without it the 5MB limit is
+      // decoration, because the request only ever carried a claimed size.
+      extensionHeaders: {
+        'x-goog-content-length-range': CONTENT_LENGTH_RANGE,
+      },
     })
 }
 

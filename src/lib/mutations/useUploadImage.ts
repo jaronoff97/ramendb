@@ -4,6 +4,8 @@ import { apiFetch } from '../api'
 interface UploadSlot {
   uploadUrl: string
   publicUrl: string
+  /** Signed into the URL, so we send these verbatim or GCS rejects the PUT. */
+  headers: Record<string, string>
 }
 
 interface UploadStatus {
@@ -24,8 +26,8 @@ export function useUploadStatus() {
  * Uploads one image and returns the URL it can be read from.
  *
  * Two steps. The server signs a one-shot PUT, and the browser sends the bytes
- * straight to Neon. The file never passes through the app server, so a large
- * photo costs no request memory there.
+ * straight to Cloud Storage. The file never passes through the app server, so
+ * a large photo costs no request memory there.
  */
 export function useUploadImage() {
   return useMutation({
@@ -38,10 +40,14 @@ export function useUploadImage() {
 
       // Straight to object storage, and deliberately not through apiFetch:
       // this request must not carry our Authorization header to a third party.
+      //
+      // The headers come from the server because they are part of the
+      // signature. One of them caps the body size, which is what stops a
+      // caller from understating `size` above and then sending gigabytes.
       const response = await fetch(slot.uploadUrl, {
         method: 'PUT',
         body: file,
-        headers: { 'Content-Type': file.type },
+        headers: slot.headers,
       })
 
       if (!response.ok) {
